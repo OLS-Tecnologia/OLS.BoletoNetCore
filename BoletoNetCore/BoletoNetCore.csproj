@@ -24,6 +24,8 @@
     <StartupObject />
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <AssemblyVersion>25.7.9323.0</AssemblyVersion>
+    <FileVersion>25.7.9323.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
