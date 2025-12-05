@@ -1,0 +1,36 @@
+﻿
+incluir boletos 
+
+400	
+Possíveis erros de negócio.
+
+406	
+Possíveis erros de inconsistência nos dados passados.
+
+500	
+Erro interno.
+
+
+{
+  "mensagens": [
+    {
+      "mensagem": "string",
+      "codigo": "string"
+    }
+  ]
+}
+
+response code  200
+---------------------------------------------------------------
+
+Get Pagadores boletos 
+
+responses 
+200: retorna o record
+
+ou
+204 no content
+
+
+
+
