@@ -1,5 +1,6 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,18 +10,21 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
-    public record RecuperarCobrancaInterResponse
-    (
+    public class RecuperarCobrancaInterResponse : IResponseDto
+    {
 
         [property: JsonProperty("cobranca")]
-        Cobranca Cobranca,
+        public Cobranca Cobranca { get; set; }
 
-        [property: JsonProperty("boleto")] Boleto Boleto,
+        [property: JsonProperty("boleto")]
+        Boleto Boleto { get; set; }
 
-        [property: JsonProperty("pix")] Pix? Pix    
+        [property: JsonProperty("pix")] 
+        public Pix? Pix { get; set; }
 
-       
-    );
+
+
+    };
 
     public record Boleto(
         [property: JsonProperty("nossoNumero")] string NossoNumero,

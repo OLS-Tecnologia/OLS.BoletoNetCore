@@ -1,5 +1,6 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
-    public  class EmitirBoletoInterRequestDto
+    public  class EmitirBoletoInterRequestDto : IRequestDto
     {
         [JsonProperty("x-conta-corrente")]
         [Required]

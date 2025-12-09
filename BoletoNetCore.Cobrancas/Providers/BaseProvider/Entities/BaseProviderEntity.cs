@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore.Cobrancas.Services
+namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
 {
-    public class AlterarVencimentoBoleto
+    public class BaseProviderEntity
     {
     }
 }

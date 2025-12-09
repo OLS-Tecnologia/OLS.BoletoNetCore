@@ -1,31 +1,28 @@
 ﻿
 using BoletoNetCore.Cobrancas.Providers.BaseProvider;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using BoletoNetCore.Cobrancas.Providers.Inter;
 using BoletoNetCore.Cobrancas.Providers.Sicoob;
-
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BoletoNetCore.Cobrancas.Providers.Factory
 {
-    public  class ProviderFactory
-    {    
-
-        public static IBaseProviderSevice GetProvider(ProviderTypeEnum providerType)
+    public class ProviderFactory 
+    {     
+        public static IProviderBoleto GetProvider(Bancos provider)
         {
-
-            switch (providerType) {
-
-                case ProviderTypeEnum.SICOOB:
-                    return new SicoobProvider();
-                
-                case ProviderTypeEnum.INTER:
+            switch (provider)
+            {
+                case Bancos.BancoInter:
                     return new InterProvider();
-                   
-                default: throw new ArgumentException("Tipo de provedor inválido. Provedores aceitos: INTER, SICOOB.");
-                    
+                case Bancos.Sicoob:
+                    return new SicoobProvider();
+                default: throw new ArgumentException("Provedor não disponível");
             }
 
         }
-
     }
 }

@@ -9,7 +9,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 {
-    public class SicoobProvider : IBaseProviderSevice
+    public class SicoobProvider : IProviderBoleto
     {
   
         public  bool SuportaCnab { get; set; } = false;
@@ -17,7 +17,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
        
 
-        public async Task<BaseProviderGerarBoletoResponseDto> EmitirBoleto(BaseProviderGerarBoletoRequestDto request)
+        public async Task<BaseProviderGerarBoletoResponseDto> EmitirBoleto(BaseBoletoRequestDto request)
         {
 
             try
