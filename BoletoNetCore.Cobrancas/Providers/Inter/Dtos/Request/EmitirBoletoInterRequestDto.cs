@@ -1,6 +1,7 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,12 +13,16 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
-    public  class EmitirBoletoInterRequestDto : IRequestDto
+    public  class EmitirBoletoInterRequestDto : InterBaseRequestDto
     {
-        [JsonProperty("x-conta-corrente")]
-        [Required]
-        public string XContaCorrente { get; set; } // header parameters
+        public string XContaCorrente { get; set; }// header parameter
 
+        public EmitirBoletoInterRequestBody RequestDto { get; set; }
+
+    }
+
+    public class EmitirBoletoInterRequestBody
+    {
         [JsonProperty("seuNumero")]
         [Required]
         [StringLength(15, ErrorMessage = "Tamanho máximo para o campo seuNumero é de 15 caracteres")]
@@ -58,18 +63,19 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         public BeneficiarioFinal? BeneficiarioFinal { get; set; }
 
         [JsonProperty("formasRecebimento")]
-        public string[]? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
+        public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
 
-        public EmitirBoletoInterRequestDto(string xContaCorrente, string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
-            Pagador pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null, 
+        public EmitirBoletoInterRequestBody(string xContaCorrente, string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
+            Pagador pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
             BeneficiarioFinal? beneficiarioFinal = null, ModeloBoletoEnum? modeloBoleto = null)
         {
             DateOnly DataAtual = new();
 
-            List<string> ListErrosValidacao = [];
-         
+            List<string> ListErrosValidacao = new List<string>();
 
-            if ( dataVencimento < DataAtual) {
+
+            if (dataVencimento < DataAtual)
+            {
                 ListErrosValidacao.Add("Data de vencimento da cobranca deve ser data futura.");
             }
 
@@ -99,7 +105,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
 
 
-            if ( mora is not null) {
+            if (mora is not null)
+            {
 
                 if (mora.Codigo.Equals(MoraCodigosEnum.ISENTO))
                 {
@@ -112,7 +119,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
                     if (mora.Codigo.Equals(MoraCodigosEnum.VALORDIA))
                     {
 
-                        if(mora.Valor is null)
+                        if (mora.Valor is null)
                         {
                             ListErrosValidacao.Add("Necessário informar o valor de juros mora por dia.");
                         }
@@ -129,8 +136,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
                     }
 
                 }
-              
-             }
+
+            }
 
             if (multa is not null)
             {
@@ -201,18 +208,23 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
             }
 
-            string[] formasRecebimento = [];
+            List<string> formasRecebimento = new List<string>();
 
             if (modeloBoleto is not null)
             {
-                formasRecebimento = modeloBoleto.Equals(ModeloBoletoEnum.COM_PIX) ? ["BOLETO", "PIX"] : ["BOLETO"];
+                if (modeloBoleto.Equals(ModeloBoletoEnum.COM_PIX))
+                {
+                    formasRecebimento.Add("BOLETO");
+                    formasRecebimento.Add("PIX");
+                }
+                else formasRecebimento.Add("BOLETO");
+
 
             }
-            else formasRecebimento = ["BOLETO"];
+            else formasRecebimento.Add("BOLETO");
 
 
-
-            XContaCorrente = xContaCorrente;
+         
             SeuNumero = seuNumero;
             ValorNominal = valorNominal;
             DataVencimento = dataVencimento;

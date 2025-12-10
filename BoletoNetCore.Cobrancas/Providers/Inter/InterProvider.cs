@@ -1,10 +1,10 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using BoletoNetCore.Cobrancas.Providers.Factory;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.Inter.Mappers;
 using Microsoft.Extensions.Configuration;
 using Org.BouncyCastle.Ocsp;
 using System;
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.ConstrainedExecution;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
@@ -19,241 +20,219 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter
 {
-    public class InterProvider : IProviderBoleto
+    public class InterProvider : IProviderBoleto<InterBaseRequestDto, InterBaseResponseDto>
     {
-        public bool SuportaCnab { get; set; } = false;
+        public  bool SuportaCnab { get; set; } = false;
         public bool SuportaApi { get; set; } = true;
 
-        public string ApiUrl { get; set; } = "https://cdpj.partners.bancointer.com.br";
+        public string ApiUrl { get; set; } = "https://cdpj-sandbox.partners.uatinter.com";
 
-        public static TokenPropsExpire TokenRequestPost { get; set; } = new TokenPropsExpire(); // Gerado com permissão de escrita
-        public static TokenPropsExpire TokenRequestGet { get; set; } = new TokenPropsExpire(); // gerado com permissão de leitura
+        public static TokenPropsExpire TokenRequest { get; set; } = new TokenPropsExpire(); // gerado com permissão de leitura
 
 
-        public  async  Task<RecuperarCobrancaInterResponse> EmitirBoleto(EmitirBoletoInterRequestDto request, string? clientId, string? clientSecret, string? ArquivoCertificado, 
-            string? ArquivoChave)
+     
+
+        public  async Task<InterBaseResponseDto>  EmitirBoleto(InterBaseRequestDto request)
         {
-            try   
-            {             
-                //string nomeArquivoCertificado = "<nome arquivo certificado>.crt";
-                //string nomeArquivoChave = "<nome arquivo chave privada>.key";
+            try
+            {
 
-                //string clientId = "<clientId de sua aplicação>";
-                //string clientSecret = "<clientSecret de sua aplicação>";
-       
-                string permissoes = "boleto-cobranca.write";
+                string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
-                HttpClient client;
+                HttpClient client = new HttpClient();
                 string? bearerToken;
 
-                X509Certificate cert = obterCert(ArquivoCertificado, ArquivoChave);
+                X509Certificate cert = obterCert(request.ArquivoCertificado, request.ArquivoChave);
 
-                TimeSpan validade = TimeSpan.FromMinutes(TokenRequestPost.expires_in);
+                TimeSpan validade = TimeSpan.FromMinutes(TokenRequest.expires_in);
 
                 //Obtendo bearer token
-                if (DateTime.UtcNow > TokenRequestPost.CreatedAt.Add(validade)) // adicionar comparação aqui
+                if (DateTime.UtcNow > TokenRequest.CreatedAt.Add(validade)) // adicionar comparação aqui
                 {
-                    bearerToken = TokenRequestPost.access_token;
+                    bearerToken = TokenRequest.access_token;
                 }
                 else
                 {
-                   
-                    TokenModel tokenModel = obterBearerToken(ApiUrl, clientId, clientSecret, permissoes, out client, cert);
 
-                    TokenRequestPost.access_token = tokenModel?.access_token;
-                    TokenRequestPost.CreatedAt = DateTime.Now;
-                    TokenRequestPost.expires_in = tokenModel.expires_in;
+                    TokenModel tokenModel = await obterBearerToken(ApiUrl, request.ClientId, request.ClientSecret, permissoes, client, cert);
 
-                }                              
+                    TokenRequest.access_token = tokenModel?.access_token;
+                    TokenRequest.CreatedAt = DateTime.Now;
+                    TokenRequest.expires_in = tokenModel.expires_in;
+
+                }
 
                 //Criar uma cobrança
-                var retorno = CriarCobranca(ApiUrl, request, out client, cert, TokenRequestPost.access_token);
-
-                // Buscar informações do boleto
-                var detalhesBoleto = await ConsultaBoleto(retorno?.CodigoSolicitacao, ArquivoCertificado, ArquivoChave, clientId, clientSecret);
+                var retorno = CriarCobranca(ApiUrl, request, out client, cert, TokenRequest.access_token);
 
 
-                return detalhesBoleto;
+                //ConsultarBoletoInterRequestDto ConsultarBoletoRequest = new()
+                //{
+                //    ArquivoCertificado = request.ArquivoCertificado,
+                //    ArquivoChave = request.ArquivoChave,
+                //    ClientId = request.ClientId,
+                //    ClientSecret = request.ClientSecret,
+                //    CodigoSolicitacao = retorno?.CodigoSolicitacao
+                //};
+
+                //// Buscar informações do boleto
+                //var detalhesBoleto = await ConsultaBoleto(ConsultarBoletoRequest);
+
+
+                return retorno;
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 // logar erro
 
                 Console.WriteLine("Error: " + ex);
                 throw;
             }
+
         }
 
-        public  void AlterarDataVencimentoBoleto()
+
+
+
+        public async  Task<HttpStatusCode> BaixarBoleto(CancelamentoBoletoInterRequestDto req)
         {
+            //try
+            //{
+            //    string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
-            Console.WriteLine(SuportaApi);
-            throw new NotImplementedException();
-        }
-
-        public void AlterarValorBoleto()
-        {
-            throw new NotImplementedException();
-        }
-
-      
-
-        public HttpStatusCode BaixarBoleto( String contaCorrente, String codigoSolicitacao, string ArquivoCertificado,
-            string ArquivoChave, CancelamentoBoletoInterDto motivoCancelamento, String? bearerToken)
-        {
-            try
-            {
+            //    HttpClient client = new HttpClient();
 
 
-                HttpClient client;
-                X509Certificate cert = obterCert(ArquivoCertificado, ArquivoChave);
+            //    X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
 
-                var clientHandlerOauth = new HttpClientHandler();
-                clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
-                clientHandlerOauth.ClientCertificates.Add(cert);
+            //    TimeSpan validade = TimeSpan.FromMinutes(TokenRequest.expires_in);
 
-                String uriCancelar = ApiUrl + "/cobranca/v3/cobrancas" + "/" + codigoSolicitacao + "/cancelar";
+            //    //Obtendo bearer token
+            //    if (DateTime.UtcNow > TokenRequest?.CreatedAt.Add(validade))
+            //    {
+            //        TokenModel tokenModel = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
 
-                using (client = new HttpClient(clientHandlerOauth))
-                {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
-                    client.DefaultRequestHeaders.Add("x-conta-corrente", contaCorrente);                   
+            //        TokenRequest.access_token = tokenModel?.access_token;
+            //        TokenRequest.CreatedAt = DateTime.Now;
+            //        TokenRequest.expires_in = tokenModel.expires_in;
+            //    }                      
 
-                    var payload = JsonSerializer.Serialize(motivoCancelamento);
 
-                    var content = new StringContent(payload, Encoding.UTF8, "application/json");
+            //    var clientHandlerOauth = new HttpClientHandler();
+            //    clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
+            //    clientHandlerOauth.ClientCertificates.Add(cert);
 
-                    HttpResponseMessage response_detalhe = client.PostAsync(uriCancelar, content).GetAwaiter().GetResult();
-                    String resultado = "";
-                    if (response_detalhe.IsSuccessStatusCode)
-                    {
-                        resultado = response_detalhe.Content.ReadAsStringAsync().Result;
-                    }
-                    else
-                    {
-                        throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
-                    }
+            //    String uriCancelar = ApiUrl + "/cobranca/v3/cobrancas" + "/" + req.CodigoSolicitacao + "/cancelar";
 
-                    client.Dispose();
+            //    using (client = new HttpClient(clientHandlerOauth))
+            //    {
+            //        client.DefaultRequestHeaders.Accept.Clear();
+            //        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{TokenRequest.access_token}");
+            //        client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");                   
 
-                    return HttpStatusCode.Accepted;
-                }
+            //        var payload = JsonSerializer.Serialize(req.RequestDto);
 
-            }
-            catch (Exception ex) {
-                Console.WriteLine(" Error: " + ex);
-                return HttpStatusCode.BadRequest;
+            //        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+            //        HttpResponseMessage response_detalhe = client.PostAsync(uriCancelar, content).GetAwaiter().GetResult();
+            //        String resultado = "";
+            //        if (response_detalhe.IsSuccessStatusCode)
+            //        { 
+            //            resultado = response_detalhe.Content.ReadAsStringAsync().Result;
+            //        }
+            //        else
+            //        {
+            //            throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
+            //        }
+
+            //        client.Dispose();
+
+            //        return HttpStatusCode.Accepted;
+            //    }
+
+            //}
+            //catch (Exception ex) {
+            //    Console.WriteLine(" Error: " + ex);
+            //    return HttpStatusCode.BadRequest;
             
-            }
-
+            //}
+            throw new NotImplementedException();
 
         }
 
-        public async Task<RecuperarCobrancaInterResponse> ConsultaBoleto(string codigoCobranca, string certPem, string eccPem, string clientId, string clientSecret)
-        {
+
+
+        //public async Task<IResponseDto> ConsultaBoleto(RequestBse interReq)
+        //{
+
+        //    ConsultarBoletoInterRequestDto req = (ConsultarBoletoInterRequestDto)interReq;
+
+            
            
-            HttpClient client = new HttpClient();
-            String bearerToken = "";
+        //    HttpClient client = new HttpClient();
+        //    String bearerToken = "";
 
-            TimeSpan validade = TimeSpan.FromMinutes(TokenRequestGet?.expires_in ?? 0);
+        //    TimeSpan validade = TimeSpan.FromMinutes(TokenRequest?.expires_in ?? 0);
+            
 
-            //String certPem = File.ReadAllText("Inter_API_Certificado.crt");
-            //String eccPem = File.ReadAllText("Inter_API_Chave.key");
+        //    X509Certificate2 cert = X509Certificate2.CreateFromPem(req.ArquivoCertificado, req.ArquivoChave);
+        //    string permissoes = "boleto-cobranca.read";
 
-            X509Certificate2 cert = X509Certificate2.CreateFromPem(certPem, eccPem);
-            string permissoes = "boleto-cobranca.read";
+        //    if (DateTime.UtcNow > TokenRequest?.CreatedAt.Add(validade))
+        //    {
+        //        TokenModel tokenModel = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
 
-            if (DateTime.UtcNow > TokenRequestGet?.CreatedAt.Add(validade))
-            {
-                TokenModel tokenModel = obterBearerToken(ApiUrl, clientId, clientSecret, permissoes, out client, cert);
+        //        TokenRequest.access_token = tokenModel?.access_token;
+        //        TokenRequest.CreatedAt = DateTime.Now;
+        //        TokenRequest.expires_in = tokenModel.expires_in;
 
-                TokenRequestGet.access_token = tokenModel?.access_token;
-                TokenRequestGet.CreatedAt = DateTime.Now;
-                TokenRequestGet.expires_in = tokenModel.expires_in;
+        //        bearerToken = tokenModel?.access_token;
 
-                bearerToken = tokenModel?.access_token;
+        //        client.Dispose();
+        //    }
 
-                client.Dispose();
-            }
-
-            String URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v2/boletos/{codigoCobranca}";
+        //    string URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v2/boletos/{req.CodigoSolicitacao}";
 
 
-            var clientHandler = new HttpClientHandler();
-            clientHandler.ClientCertificates.Add(cert);
-            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+        //    var clientHandler = new HttpClientHandler();
+        //    clientHandler.ClientCertificates.Add(cert);
+        //    clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
 
-            using (client = new HttpClient(clientHandler))
-            {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
-                client.DefaultRequestHeaders.Add("x-conta-corrente", "<conta corrente selecionada>");
+        //    using (client = new HttpClient(clientHandler))
+        //    {
+        //        client.DefaultRequestHeaders.Accept.Clear();
+        //        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
+        //        client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
                 
             
-                HttpResponseMessage recuperarCobranca = client.GetAsync(URI_Detalhe_boleto).GetAwaiter().GetResult();
+        //        HttpResponseMessage recuperarCobranca =  client.GetAsync(URI_Detalhe_boleto).GetAwaiter().GetResult();
 
-                string resultRecuperarCobranca = "";
-                if (recuperarCobranca.IsSuccessStatusCode)
-                {
-                    resultRecuperarCobranca = recuperarCobranca.Content.ReadAsStringAsync().Result;
+        //        string resultRecuperarCobranca = "";
+        //        if (recuperarCobranca.IsSuccessStatusCode)
+        //        {
+        //            resultRecuperarCobranca = recuperarCobranca.Content.ReadAsStringAsync().Result;
 
-                    return JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
+        //            return JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
 
-                }
-                else
-                {
-                    Console.WriteLine("Error, received status code {0}: {1}", recuperarCobranca?.StatusCode, recuperarCobranca?.ReasonPhrase);
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("Error, received status code {0}: {1}", recuperarCobranca?.StatusCode, recuperarCobranca?.ReasonPhrase);
 
-                    throw new Exception(" Erro ao tentar bucar dados da cobrança.");
-                }
+        //            throw new Exception($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
+        //        }
 
-            }          
+        //    }          
 
 
-        }
+        //}
 
-        private static TokenModel obterBearerToken(String urlInter, String clientId, String clientSecret, String permissoes, out HttpClient client, X509Certificate cert)
-        {
-            var clientHandlerOauth = new HttpClientHandler();
-            clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
-            clientHandlerOauth.ClientCertificates.Add(cert);
-
-            String URI_Token = urlInter + "/oauth/v2/token";
-
-            var data = new[]
-            {
-                new KeyValuePair<string, string>("client_id", clientId),
-                new KeyValuePair<string, string>("client_secret", clientSecret),
-                new KeyValuePair<string, string>("scope", permissoes),
-                new KeyValuePair<string, string>("grant_type", "client_credentials")
-             };
-
-            using (client = new HttpClient(clientHandlerOauth))
-            {
-                var response = client.PostAsync(URI_Token, new FormUrlEncodedContent(data)).GetAwaiter().GetResult();
-
-                String jsonStr = response.Content.ReadAsStringAsync().Result;
-
-                TokenModel? tokenModel = JsonSerializer.Deserialize<TokenModel>(jsonStr);           
-
-                client.Dispose();
-
-                return tokenModel;
-            }
-        }
-
-        private static X509Certificate obterCert(String certPem, String keyPem)
-        {
-            //String certPem = File.ReadAllText(nomeArquivoCertificado);
-            //String keyPem = File.ReadAllText(nomeArquivoChave);
-
-            X509Certificate2 cert = X509Certificate2.CreateFromPem(certPem, keyPem);
-
-            return cert;
-        }
-
-        private EmitirBoletoInterResponseDto CriarCobranca(string urlInter, EmitirBoletoInterRequestDto request, out HttpClient client, X509Certificate cert, string? bearerToken)
+        // ----------------------------------------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------------------------------------------
+      
+        private EmitirBoletoInterResponseDto CriarCobranca(string urlInter, InterBaseRequestDto request, out HttpClient client, X509Certificate cert, string? bearerToken)
         {
             var clientHandlerOauth = new HttpClientHandler();
             clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -264,8 +243,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             using (client = new HttpClient(clientHandlerOauth))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
-                client.DefaultRequestHeaders.Add("x-conta-corrente", request.XContaCorrente);
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
+                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{((EmitirBoletoInterRequestDto)request).XContaCorrente}");
                
                 var payload = JsonSerializer.Serialize(request);
               
@@ -290,14 +269,139 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             }
         }
 
-        //public override CancelamentoBoletoInterDto ImpostoDeRenda<EmitirBoletoInterRequestDto, CancelamentoBoletoInterDto>(EmitirBoletoInterRequestDto req)
-        //{
-        //    var teste = new CancelamentoBoletoInterDto();
-        //    return teste;
-        //}
+
+
+        private async Task<AtualizarBoletoInterResponseDto> AtualizarBoleto(AtualizarboletoInterRequestDto req)
+        {
+            string permissoes = "boleto-cobranca.write";
+
+            HttpClient client = new HttpClient();
+       
+
+            X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
+
+            TimeSpan validade = TimeSpan.FromMinutes(TokenRequest.expires_in);
+
+            //Obtendo bearer token
+            if (DateTime.UtcNow > TokenRequest.CreatedAt.Add(validade))
+            {
+                TokenModel tokenModel = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
+
+                TokenRequest.access_token = tokenModel?.access_token;
+                TokenRequest.CreatedAt = DateTime.Now;
+                TokenRequest.expires_in = tokenModel.expires_in;
+            }
+
+            ///
+
+            var clientHandlerOauth = new HttpClientHandler();
+            clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
+            clientHandlerOauth.ClientCertificates.Add(cert);
+
+            String uriEditar = ApiUrl + "/cobranca/v3/cobrancas" + "/" + req.CodigoSolicitacao;
+
+            using (client = new HttpClient(clientHandlerOauth))
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{TokenRequest.access_token}");
+                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
+
+                // Serialize class into JSON
+                var payload = JsonSerializer.Serialize(req.RequestDto) ;
+
+                // Wrap our JSON inside a StringContent object
+                var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response_detalhe = client.PostAsync(uriEditar, content).GetAwaiter().GetResult();
+                String resultado = "";
+                if (response_detalhe.IsSuccessStatusCode)
+                {
+                    resultado = response_detalhe.Content.ReadAsStringAsync().Result;
+                }
+                else
+                {
+                    throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
+                }
+
+                client.Dispose();
+
+                return JsonSerializer.Deserialize<AtualizarBoletoInterResponseDto>(resultado);
+            }
+
+
+         }
+
+        private async Task<TokenModel> obterBearerToken(string urlInter, string clientId, string clientSecret, string permissoes, HttpClient client, X509Certificate cert)
+        {
+            var clientHandlerOauth = new HttpClientHandler();
+            clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
+            clientHandlerOauth.ClientCertificates.Add(cert);
+
+            String URI_Token = urlInter + "/oauth/v2/token";
+
+            var data = new[]
+            {
+                new KeyValuePair<string, string>("client_id", clientId),
+                new KeyValuePair<string, string>("client_secret", clientSecret),
+                new KeyValuePair<string, string>("scope", permissoes),
+                new KeyValuePair<string, string>("grant_type", "client_credentials")
+             };
+
+            using (client = new HttpClient(clientHandlerOauth))
+            {
+                var response = await  client.PostAsync(URI_Token, new FormUrlEncodedContent(data));
+
+                String jsonStr = response.Content.ReadAsStringAsync().Result;
+
+                TokenModel? tokenModel = JsonSerializer.Deserialize<TokenModel>(jsonStr);
+
+                client.Dispose();
+
+                return tokenModel;
+            }
+        }
+
+
+
+
+        private static X509Certificate obterCert(String certPem, String keyPem)
+        {
+
+            string certificado = File.ReadAllText(certPem);
+            string chave = File.ReadAllText(keyPem);
+
+            X509Certificate2 cert = X509Certificate2.CreateFromPem(certPem, keyPem);
+
+            return cert;
+        }
+
+        public Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<InterBaseResponseDto> AlterarDataDeVencimentoBoleto(InterBaseRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<InterBaseResponseDto> AlterarValorBoleto(InterBaseRequestDto request)
+        {
+            throw new NotImplementedException();
+        }
     }
+
+    /// <summary>
+    /// Token retornado pelo inter 
+    /// </summary>
     public class TokenModel
     {
+     
         public string? access_token { get; set; }
         public string? token_type { get; set; }
         public int expires_in { get; set; }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces
+namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos
 {
-    public class RequestBase
+    internal class RateioCreditoInter
     {
     }
 }

@@ -15,7 +15,7 @@ namespace BoletoNetCore.Cobrancas.Services
     {
 
         // Arquivo teste temporário
-        public async Task<IResponseDto> EmitirBoletoService(IRequestDto request) 
+        public async void EmitirBoletoService(ResponseBase request) 
         {
             try
             {
@@ -32,7 +32,7 @@ namespace BoletoNetCore.Cobrancas.Services
                 }
 
 
-                return result;
+                
             }
             catch (Exception ex) {
                 // Exibir a mensagem no form de erros

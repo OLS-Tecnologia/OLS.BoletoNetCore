@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
+namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request
 {
-    public class BaseProviderEntity
+    public class BaseProviderRequestDto
     {
     }
 }

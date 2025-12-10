@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces
 {
-    public interface IResponseDto
+    public class ResponseBase
     {
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -176,7 +177,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
             DateOnly? dataSegundoDesconto = null, double? valorSegundoDesconto =null, DateOnly? dataTerceiroDesconto = null, double? valorTerceiroDesconto = null,
             double? valorAbatimento = null, List<string>? mensagensInstrucao = null, List<RateioCredito>? rateioCreditos = null, double? valorJurosMora = null)
         {
-            List<string> listErros = [];
+            List<string> listErros = new  List<string> ();
             DateOnly DataAtual = new();
 
             bool isValidCodigo = CodigoProtestoOptions.ContainsKey(CodigoProtesto);

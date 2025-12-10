@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AssemblyVersion>25.7.9323.0</AssemblyVersion>
     <FileVersion>25.7.9323.0</FileVersion>
   </PropertyGroup>
@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BoletoNetCore.Cobrancas\BoletoNetCore.Cobrancas.csproj" />
     <ProjectReference Include="..\BoletoNetCore.Pdf\BoletoNetCore.Pdf.csproj" />
     <ProjectReference Include="..\BoletoNetCore\BoletoNetCore.csproj" />
   </ItemGroup>

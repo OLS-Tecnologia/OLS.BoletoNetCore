@@ -1,4 +1,5 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request;
 using Newtonsoft.Json;
 
 

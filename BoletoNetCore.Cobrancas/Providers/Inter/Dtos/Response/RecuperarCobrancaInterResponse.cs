@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
-    public class RecuperarCobrancaInterResponse : IResponseDto
+    public class RecuperarCobrancaInterResponse : InterBaseResponseDto
     {
 
         [property: JsonProperty("cobranca")]
