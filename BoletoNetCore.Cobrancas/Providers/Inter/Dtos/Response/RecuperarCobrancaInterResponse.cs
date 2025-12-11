@@ -1,12 +1,5 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {

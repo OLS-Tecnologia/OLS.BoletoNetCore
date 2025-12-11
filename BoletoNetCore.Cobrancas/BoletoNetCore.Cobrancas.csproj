@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Providers\BaseProvider\Entities\" />
+    <Folder Include="Providers\BaseProvider\Interfaces\" />
   </ItemGroup>
 
 </Project>

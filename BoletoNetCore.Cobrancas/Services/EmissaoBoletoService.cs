@@ -2,7 +2,6 @@
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using BoletoNetCore.Cobrancas.Providers.Factory;
 using BoletoNetCore.Cobrancas.Providers.Inter;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;

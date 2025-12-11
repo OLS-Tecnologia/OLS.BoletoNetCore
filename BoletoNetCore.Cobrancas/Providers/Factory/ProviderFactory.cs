@@ -1,14 +1,8 @@
 ﻿
 using BoletoNetCore.Cobrancas.Providers.BaseProvider;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
 using BoletoNetCore.Cobrancas.Providers.Inter;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.Sicoob;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace BoletoNetCore.Cobrancas.Providers.Factory
 {

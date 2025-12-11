@@ -1,8 +1,4 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
-using Org.BouncyCastle.Ocsp;
-using System.Net;
+﻿using System.Net;
 
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider

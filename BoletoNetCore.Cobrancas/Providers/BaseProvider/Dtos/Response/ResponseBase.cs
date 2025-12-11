@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces
+namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response
 {
-    public class RequestBase
+    public class ResponseBase
     {
     }
 }

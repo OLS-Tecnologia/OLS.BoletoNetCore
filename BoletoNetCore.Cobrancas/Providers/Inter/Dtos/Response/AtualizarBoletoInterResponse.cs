@@ -1,10 +1,4 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Interfaces;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
