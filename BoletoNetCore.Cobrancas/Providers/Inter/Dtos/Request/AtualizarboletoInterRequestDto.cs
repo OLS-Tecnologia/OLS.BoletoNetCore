@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
@@ -21,10 +22,10 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
     public class AtualizarBoletoBody
     {
 
-        [JsonProperty("dataVencimento")]
+        [JsonPropertyName("dataVencimento")]
         public DateOnly DataVencimento { get; set; }
 
-        [JsonProperty("valorNominal")]
+        [JsonPropertyName("valorNominal")]
         public double ValorNominal { get; set; }
     }
 }

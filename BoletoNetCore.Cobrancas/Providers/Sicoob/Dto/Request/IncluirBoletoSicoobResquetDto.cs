@@ -3,6 +3,7 @@ using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
@@ -16,11 +17,11 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
             Boleto = boleto;
         }
 
-        [property: JsonProperty("client_id")]
+        [property: JsonPropertyName("client_id")]
         [Required]
         string ClienteId { get; set; }
 
-        [property: JsonProperty("boleto")]
+        [property: JsonPropertyName("boleto")]
         [Required]
         IncluirBoletoSicoobRequestBody Boleto { get; set; }
     }   
@@ -29,143 +30,143 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
     public class IncluirBoletoSicoobRequestBody
     {
-        [JsonProperty("numeroCliente")]
+        [JsonPropertyName("numeroCliente")]
         [Required]
         public int NumeroCliente { get; set; }
 
-        [JsonProperty("codigoModalidade")]
+        [JsonPropertyName("codigoModalidade")]
         [Required]
         public int CodigoModalidade { get; set; } 
 
-        [JsonProperty("numeroContaCorrente")]
+        [JsonPropertyName("numeroContaCorrente")]
         [Required]
         public int NumeroContaCorrente { get; set; }
 
-        [JsonProperty("codigoEspecieDocumento")]
+        [JsonPropertyName("codigoEspecieDocumento")]
         [Required]
         public CodigoEspecieDocumentosEnum CodigoEspecieDocumento { get; set; }
 
-        [JsonProperty("dataEmissao")]
+        [JsonPropertyName("dataEmissao")]
         [Required]
         public DateOnly DataEmissao { get; set; }
 
-        [JsonProperty("nossoNumero")]
+        [JsonPropertyName("nossoNumero")]
         public int NossoNumero { get; set; }
 
-        [JsonProperty("seuNumero")]
+        [JsonPropertyName("seuNumero")]
         [Required]
         public string SeuNumero { get; set; }
 
-        [JsonProperty("identificacaoBoletoEmpresa")]
+        [JsonPropertyName("identificacaoBoletoEmpresa")]
         public string IdentificacaoBoletoEmpresa { get; set; }
 
-        [JsonProperty("identificacaoEmissaoBoleto")]
+        [JsonPropertyName("identificacaoEmissaoBoleto")]
         [Required]
         public int IdentificacaoEmissaoBoleto { get; set; }
 
-        [JsonProperty("identificacaoDistribuicaoBoleto")]
+        [JsonPropertyName("identificacaoDistribuicaoBoleto")]
         [Required]
         public int IdentificacaoDistribuicaoBoleto { get; set; }
 
-        [JsonProperty("valor")]
+        [JsonPropertyName("valor")]
         [Required]
         public double Valor { get; set; }
 
-        [JsonProperty("dataVencimento")]
+        [JsonPropertyName("dataVencimento")]
         [Required]
         public DateOnly DataVencimento { get; set; }
 
-        [JsonProperty("dataLimitePagamento")]
+        [JsonPropertyName("dataLimitePagamento")]
         public DateOnly? DataLimitePagamento { get; set; }
 
-        [JsonProperty("valorAbatimento")]
+        [JsonPropertyName("valorAbatimento")]
         public double? ValorAbatimento { get; set; }
 
-        [JsonProperty("tipoDesconto")]
+        [JsonPropertyName("tipoDesconto")]
         [Required]
         public int TipoDesconto { get; set; }
 
-        [JsonProperty("dataPrimeiroDesconto")]
+        [JsonPropertyName("dataPrimeiroDesconto")]
         public DateOnly? DataPrimeiroDesconto { get; set; }
 
-        [JsonProperty("valorPrimeiroDesconto")]
+        [JsonPropertyName("valorPrimeiroDesconto")]
         public double? ValorPrimeiroDesconto { get; set; }
 
-        [JsonProperty("dataSegundoDesconto")]
+        [JsonPropertyName("dataSegundoDesconto")]
         public DateOnly? DataSegundoDesconto { get; set; }
 
-        [JsonProperty("valorSegundoDesconto")]
+        [JsonPropertyName("valorSegundoDesconto")]
         public double? ValorSegundoDesconto { get; set; }
 
-        [JsonProperty("dataTerceiroDesconto")]
+        [JsonPropertyName("dataTerceiroDesconto")]
         public DateOnly? DataTerceiroDesconto { get; set; }
 
-        [JsonProperty("valorTerceiroDesconto")]
+        [JsonPropertyName("valorTerceiroDesconto")]
         public double?  ValorTerceiroDesconto { get; set; }
 
        
-        [JsonProperty("tipoMulta")]
+        [JsonPropertyName("tipoMulta")]
         [Required]
         public int TipoMulta { get; set; }
       
-        [JsonProperty("dataMulta")]
+        [JsonPropertyName("dataMulta")]
         public DateOnly? DataMulta { get; set; }
 
-        [JsonProperty("valorMulta")]
+        [JsonPropertyName("valorMulta")]
         public double? ValorMulta { get; set; }
 
        
-        [JsonProperty("tipoJurosMora")]
+        [JsonPropertyName("tipoJurosMora")]
         [Required]
         public int TipoJurosMora { get; set; }
 
        
-        [JsonProperty("dataJurosMora")]
+        [JsonPropertyName("dataJurosMora")]
         public DateOnly? DataJurosMora { get; set; }
 
-        [JsonProperty("valorJurosMora")]
+        [JsonPropertyName("valorJurosMora")]
         public double? ValorJurosMora { get; set; }
 
-        [JsonProperty("numeroParcela")]
+        [JsonPropertyName("numeroParcela")]
         [Required]
         public int NumeroParcela { get; set; }
 
-        [JsonProperty("aceite")]
+        [JsonPropertyName("aceite")]
         public bool Aceite { get; set; }
 
-        [JsonProperty("codigoNegativacao")]
+        [JsonPropertyName("codigoNegativacao")]
         public int CodigoNegativacao { get; set; }
 
-        [JsonProperty("numeroDiasNegativacao")]
+        [JsonPropertyName("numeroDiasNegativacao")]
         public int NumeroDiasNegativacao { get; set; }
 
        
-        [JsonProperty("codigoProtesto")]
+        [JsonPropertyName("codigoProtesto")]
         public int CodigoProtesto { get; set; }
 
-        [JsonProperty("numeroDiasProtesto")]
+        [JsonPropertyName("numeroDiasProtesto")]
         public int NumeroDiasProtesto { get; set; }
 
-        [JsonProperty("pagador")]
+        [JsonPropertyName("pagador")]
         [Required]
         public Pagador Pagador { get; set; }
 
-        [JsonProperty("beneficiarioFinal")]
+        [JsonPropertyName("beneficiarioFinal")]
         public BeneficiarioFinal BeneficiarioFinal { get; set; }
 
-        [JsonProperty("mensagensInstrucao")]
+        [JsonPropertyName("mensagensInstrucao")]
         public List<string>? MensagensInstrucao { get; set; }
 
-        [JsonProperty("gerarPdf")]
+        [JsonPropertyName("gerarPdf")]
         public bool GerarPdf { get; set; }
 
-        [JsonProperty("rateioCreditos")]
+        [JsonPropertyName("rateioCreditos")]
         public List<RateioCredito>? RateioCreditos { get; set; }
 
-        [JsonProperty("codigoCadastrarPIX")]
+        [JsonPropertyName("codigoCadastrarPIX")]
         public int CodigoCadastrarPIX { get; set; }
 
-        [JsonProperty("numeroContratoCobranca")]
+        [JsonPropertyName("numeroContratoCobranca")]
         public int NumeroContratoCobranca { get; set; }
 
         public IncluirBoletoSicoobRequestBody(int numeroCliente, int codigoModalidade, int numeroContaCorrente, CodigoEspecieDocumentosEnum codigoEspecieDocumento, DateOnly dataEmissao, 

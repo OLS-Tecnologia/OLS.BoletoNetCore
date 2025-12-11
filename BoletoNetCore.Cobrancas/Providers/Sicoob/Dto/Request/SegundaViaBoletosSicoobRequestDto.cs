@@ -6,35 +6,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
+using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 {
     public class SegundaViaBoletosSicoobRequestDto
     {
-        [property: JsonProperty("client_id")]
+        [property: JsonPropertyName("client_id")]
         [Required]
         public string ClienteId { get; set; } // passar no header, demais parametros via query
-        [property: JsonProperty("numeroCliente")]
+        [property: JsonPropertyName("numeroCliente")]
         [Required]
         public string NumeroCliente { get; set; } 
 
-        [property: JsonProperty("codigoModalidade")]
+        [property: JsonPropertyName("codigoModalidade")]
         [Required]
         public ModalidadeBoleto CodigoModalidade { get; set; }
 
-        [property: JsonProperty("nossoNumero")] 
+        [property: JsonPropertyName("nossoNumero")] 
          public int? NossoNumero {  get; set; }
 
-        [property: JsonProperty("linhaDigitavel")]
+        [property: JsonPropertyName("linhaDigitavel")]
         public string? LinhaDigitavel { get; set; }
 
-        [property: JsonProperty("codigoBarras")]
+        [property: JsonPropertyName("codigoBarras")]
         public string? CodigoBarras { get; set; }
 
-        [property: JsonProperty("gerarPdf")]
+        [property: JsonPropertyName("gerarPdf")]
         public bool? GerarPdf { get; set; }
 
-        [property: JsonProperty("numeroContratoCobranca")]
+        [property: JsonPropertyName("numeroContratoCobranca")]
         public int? NumeroContratoCobranca { get; set; }
 
 

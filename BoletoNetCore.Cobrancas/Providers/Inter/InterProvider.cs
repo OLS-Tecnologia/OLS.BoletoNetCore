@@ -2,6 +2,7 @@
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.Inter.Utills;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -38,17 +39,17 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 //Criar uma cobrança
                 var retorno = await CriarCobranca(ApiUrl, request,  client, cert, bearerToken);
 
-                //ConsultarBoletoInterRequestDto ConsultarBoletoRequest = new()
-                //{
-                //    ArquivoCertificado = request.ArquivoCertificado,
-                //    ArquivoChave = request.ArquivoChave,
-                //    ClientId = request.ClientId,
-                //    ClientSecret = request.ClientSecret,
-                //    CodigoSolicitacao = retorno?.CodigoSolicitacao
-                //};
+                ConsultarBoletoInterRequestDto ConsultarBoletoRequest = new()
+                {
+                    ArquivoCertificado = request.ArquivoCertificado,
+                    ArquivoChave = request.ArquivoChave,
+                    ClientId = request.ClientId,
+                    ClientSecret = request.ClientSecret,
+                    CodigoSolicitacao = retorno?.CodigoSolicitacao
+                };
 
-                //// Buscar informações do boleto
-                //var detalhesBoleto = await ConsultaBoleto(ConsultarBoletoRequest);
+                // Buscar informações do boleto
+                var detalhesBoleto = await ConsultaBoleto(ConsultarBoletoRequest);
 
 
                 return retorno;
@@ -66,130 +67,123 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
         }
 
 
-        public async  Task<HttpStatusCode> BaixarBoleto(CancelamentoBoletoInterRequestDto req)
-        {
-            //try
-            //{
-            //    string permissoes = "boleto-cobranca.write boleto-cobranca.read";
+        public async  Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto interReq)
+        {           
 
-            //    HttpClient client = new HttpClient();
-            //    string bearerToken = ""; 
+            try
+            {
+                CancelamentoBoletoInterRequestDto req = ((CancelamentoBoletoInterRequestDto)interReq);
 
-            //    X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
+                string permissoes = "boleto-cobranca.write boleto-cobranca.read";
+
+                HttpClient client = new HttpClient();
+                string bearerToken = "";
+
+                X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
 
 
-            //    bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
+                bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
 
-            //    var clientHandlerOauth = new HttpClientHandler();
-            //    clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
-            //    clientHandlerOauth.ClientCertificates.Add(cert);
+                var clientHandlerOauth = new HttpClientHandler();
+                clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
+                clientHandlerOauth.ClientCertificates.Add(cert);
 
-            //    String uriCancelar = ApiUrl + "/cobranca/v3/cobrancas" + "/" + req.CodigoSolicitacao + "/cancelar";
+                string uriCancelar = ApiUrl + "/cobranca/v3/cobrancas" + "/" + req.CodigoSolicitacao + "/cancelar";
 
-            //    using (client = new HttpClient(clientHandlerOauth))
-            //    {
-            //        client.DefaultRequestHeaders.Accept.Clear();
-            //        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
-            //        client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");                   
+                using (client = new HttpClient(clientHandlerOauth))
+                {
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
+                    client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
 
-            //        var payload = JsonSerializer.Serialize(req.RequestDto);
+                    var payload = JsonSerializer.Serialize(req.RequestDto);
 
-            //        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+                    var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-            //        HttpResponseMessage response_detalhe = client.PostAsync(uriCancelar, content).GetAwaiter().GetResult();
-            //        String resultado = "";
-            //        if (response_detalhe.IsSuccessStatusCode)
-            //        { 
-            //            resultado = response_detalhe.Content.ReadAsStringAsync().Result;
-            //        }
-            //        else
-            //        {
-            //            throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
-            //        }
+                    HttpResponseMessage response_detalhe = await client.PostAsync(uriCancelar, content);
+                    string resultado = "";
+                    if (response_detalhe.IsSuccessStatusCode)
+                    {
+                        resultado = await response_detalhe.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
+                    }
+                    
 
-            //        client.Dispose();
+                    return HttpStatusCode.Accepted;
+                }
 
-            //        return HttpStatusCode.Accepted;
-            //    }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(" Error: " + ex);
+                return HttpStatusCode.BadRequest;
 
-            //}
-            //catch (Exception ex) {
-            //    Console.WriteLine(" Error: " + ex);
-            //    return HttpStatusCode.BadRequest;
-
-            //}
-            throw new NotImplementedException();
+            }
+           
 
         }
 
 
 
-        //public async Task<IResponseDto> ConsultaBoleto(RequestBse interReq)
-        //{
+        public async Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto interReq)
+        {
 
-        //    ConsultarBoletoInterRequestDto req = (ConsultarBoletoInterRequestDto)interReq;
-
-
-        //    HttpClient client = new HttpClient();
-        //    string bearerToken = "";     
+            ConsultarBoletoInterRequestDto req = (ConsultarBoletoInterRequestDto)interReq;
 
 
-        //    X509Certificate2 cert = X509Certificate2.CreateFromPem(req.ArquivoCertificado, req.ArquivoChave);
-        //    string permissoes = "boleto-cobranca.read";
+            HttpClient client = new HttpClient();
+            string bearerToken = "";
 
-        //    bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
+            X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
+       
+            string permissoes = "boleto-cobranca.read";
 
-        //    string URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v2/boletos/{req.CodigoSolicitacao}";
+            bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
 
-        //    var clientHandler = new HttpClientHandler();
-        //    clientHandler.ClientCertificates.Add(cert);
-        //    clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            string URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v3/cobrancas/{req.CodigoSolicitacao}";
 
-        //    using (client = new HttpClient(clientHandler))
-        //    {
-        //        client.DefaultRequestHeaders.Accept.Clear();
-        //        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
-        //        client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
+            var clientHandler = new HttpClientHandler();
+            clientHandler.ClientCertificates.Add(cert);
+            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
 
-
-        //        HttpResponseMessage recuperarCobranca =  client.GetAsync(URI_Detalhe_boleto).GetAwaiter().GetResult();
-
-        //        string resultRecuperarCobranca = "";
-        //        if (recuperarCobranca.IsSuccessStatusCode)
-        //        {
-        //            resultRecuperarCobranca = recuperarCobranca.Content.ReadAsStringAsync().Result;
-
-        //            return JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
-
-        //        }
-        //        else
-        //        {
-        //            Console.WriteLine("Error, received status code {0}: {1}", recuperarCobranca?.StatusCode, recuperarCobranca?.ReasonPhrase);
-
-        //            throw new Exception($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
-        //        }
-
-        //    }          
+            using (client = new HttpClient(clientHandler))
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
+                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
 
 
-        //}
+                HttpResponseMessage recuperarCobranca = await client.GetAsync(URI_Detalhe_boleto);
+
+                string resultRecuperarCobranca = "";
+                if (recuperarCobranca.IsSuccessStatusCode)
+                {
+                    resultRecuperarCobranca = await recuperarCobranca.Content.ReadAsStringAsync();
+
+                    return JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
+
+                }
+                else
+                {
+                    Console.WriteLine("Error, received status code {0}: {1}", recuperarCobranca?.StatusCode, recuperarCobranca?.ReasonPhrase);
+
+                    throw new Exception($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
+                }
+
+            }
+
+
+        }
 
         // ----------------------------------------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------------------------------------
         // ----------------------------------------------------------------------------------------------------------------
 
         private async Task<EmitirBoletoInterResponseDto> CriarCobranca(string urlInter, InterBaseRequestDto request, HttpClient client, X509Certificate cert, string? bearerToken)
-        {
-
-            //var handler = new SocketsHttpHandler
-            //{
-            //    SslOptions = new SslClientAuthenticationOptions
-            //    {
-            //        ClientCertificates = new X509CertificateCollection { cert },
-            //        EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13
-            //    }
-            //};
-
+        {           
 
             var clientHandlerOauth = new HttpClientHandler();
             clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
@@ -203,7 +197,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
                 client.DefaultRequestHeaders.Add("x-conta-corrente", $"{((EmitirBoletoInterRequestDto)request).XContaCorrente}");
                
-                var payload = JsonSerializer.Serialize(request);
+                var payload = JsonSerializer.Serialize(((EmitirBoletoInterRequestDto)request).RequestDto);
               
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -278,7 +272,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
          }
 
         private async Task<string> obterBearerToken(string urlInter, string clientId, string clientSecret, string permissoes, HttpClient client, X509Certificate cert)
-        {          
+        {                 
 
             //Obtendo bearer token
             if (TokenRequest.access_token is not null && DateTime.UtcNow < TokenRequest.ExpiredAt)                       
@@ -359,20 +353,20 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
 
 
         // TODO: Metodos serão apagados
-        public Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto request)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public Task<InterBaseResponseDto> AlterarDataDeVencimentoBoleto(InterBaseRequestDto request)
         {
             throw new NotImplementedException();
         }
 
-        public Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto request)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public Task<InterBaseResponseDto> AlterarValorBoleto(InterBaseRequestDto request)
         {

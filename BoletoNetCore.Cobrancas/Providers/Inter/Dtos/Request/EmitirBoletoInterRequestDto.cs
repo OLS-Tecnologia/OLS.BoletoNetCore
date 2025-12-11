@@ -1,7 +1,8 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
@@ -15,51 +16,51 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
     public class EmitirBoletoInterRequestBody
     {
-        [JsonProperty("seuNumero")]
+        [JsonPropertyName("seuNumero")]
         [Required]
         [StringLength(15, ErrorMessage = "Tamanho máximo para o campo seuNumero é de 15 caracteres")]
         public string SeuNumero { get; set; }
 
-        [JsonProperty("valorNominal")]
+        [JsonPropertyName("valorNominal")]
         [Required]
         public double ValorNominal { get; set; }
 
-        [JsonProperty("dataVencimento")]
+        [JsonPropertyName("dataVencimento")]
         [Required]
         public DateOnly DataVencimento { get; set; }
 
-        [JsonProperty("numDiasAgenda")]
+        [JsonPropertyName("numDiasAgenda")]
         [Required]
         [Range(0, 61, ErrorMessage = "Dias para cancelamento da cobrança após o vencimento deve estar no intervalo entre 0 até 60 dias.")]
         public int NumDiasAgenda { get; set; }
 
-        [JsonProperty("pagador")]
+        [JsonPropertyName("pagador")]
         [Required]
-        public Pagador Pagador { get; set; }
+        public PagadorBase Pagador { get; set; }
 
-        [JsonProperty("desconto")]
+        [JsonPropertyName("desconto")]
         public Desconto? Desconto { get; set; }
 
-        [JsonProperty("multa")]
+        [JsonPropertyName("multa")]
         public Multa? Multa { get; set; }
 
 
-        [JsonProperty("mora")]
+        [JsonPropertyName("mora")]
         public Mora? Mora { get; set; }
 
-        [JsonProperty("mensagem")]
+        [JsonPropertyName("mensagem")]
         public string[]? Mensagem { get; set; } = new string[5];
 
 
-        [JsonProperty("beneficiarioFinal")]
+        [JsonPropertyName("beneficiarioFinal")]
         public BeneficiarioFinal? BeneficiarioFinal { get; set; }
 
-        [JsonProperty("formasRecebimento")]
+        [JsonPropertyName("formasRecebimento")]
         public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
 
         public EmitirBoletoInterRequestBody() { }
         public EmitirBoletoInterRequestBody(string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
-            Pagador pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
+            PagadorBase pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
             BeneficiarioFinal? beneficiarioFinal = null, ModeloBoletoEnum? modeloBoleto = null)
         {
             DateOnly DataAtual = new();
@@ -235,13 +236,13 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
    
     public class Mora
     {
-        [JsonProperty("valor")]
+        [JsonPropertyName("valor")]
         public double? Valor { get; set; }
 
-        [JsonProperty("taxa")]
+        [JsonPropertyName("taxa")]
         public double? Taxa { get; set; }
 
-        [JsonProperty("codigo")]
+        [JsonPropertyName("codigo")]
         [Required]
         public MoraCodigosEnum Codigo { get; set; }   
 
@@ -250,13 +251,13 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
     public class Multa
     {
-        [JsonProperty("valor")]
+        [JsonPropertyName("valor")]
         public double? Valor { get; set; }
 
-        [JsonProperty("taxa")]
+        [JsonPropertyName("taxa")]
         public double? Taxa { get; set; }
 
-        [JsonProperty("codigo")]
+        [JsonPropertyName("codigo")]
         [Required]
         public MultaCodigosEnum Codigo { get; set; }
 
@@ -265,17 +266,17 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
     public class Desconto
     {
-        [JsonProperty("valor")]
+        [JsonPropertyName("valor")]
         public double? Valor { get; set; } = 1;
 
-        [JsonProperty("taxa")]
+        [JsonPropertyName("taxa")]
         public double? Taxa { get; set; } = 1;
 
-        [JsonProperty("codigo")]
+        [JsonPropertyName("codigo")]
         [Required]
         public TipoDesconto Codigo { get; set; }
 
-        [JsonProperty("quantidadeDias")]
+        [JsonPropertyName("quantidadeDias")]
         [Required]
         public int? QuantidadeDias { get; set; } = 1; // Quantidade de dias antes do vencimento que será aplicado o desconto.
 
