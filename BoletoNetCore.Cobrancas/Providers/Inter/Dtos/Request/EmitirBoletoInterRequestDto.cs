@@ -65,7 +65,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         [JsonProperty("formasRecebimento")]
         public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
 
-        public EmitirBoletoInterRequestBody(string xContaCorrente, string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
+        public EmitirBoletoInterRequestBody() { }
+        public EmitirBoletoInterRequestBody(string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
             Pagador pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
             BeneficiarioFinal? beneficiarioFinal = null, ModeloBoletoEnum? modeloBoleto = null)
         {

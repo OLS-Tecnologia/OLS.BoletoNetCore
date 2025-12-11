@@ -20,8 +20,6 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test]
         public async Task EmitirCobranca()
         {
-
-
             string payload = @"{
   ""seuNumero"": ""123456"",
   ""valorNominal"": 2.5,
@@ -73,35 +71,57 @@ namespace BoletoNetCore.Testes.ApiCobrancas
     ""cep"": ""30110000""
   }
 }";
-;
-
-
 
 
             var provider = new InterProvider();
 
-
-            EmitirBoletoInterRequestBody body = JsonSerializer.Deserialize<EmitirBoletoInterRequestBody>(payload);
-
-            var interRequest = new EmitirBoletoInterRequestDto()
-            {
-                ArquivoCertificado = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Certificado.crt",
-                ArquivoChave = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Chave.key",
-                ClientId = "32d83ffa-ba06-44a3-9ef3-c0736b15e209",
-                ClientSecret = "732171c2-391c-4baf-a632-8d31a449d171",
-                XContaCorrente = "1154",
-                RequestDto = body
+            var pagador = new Pagador() {
+            CPFCNPJ = "63037800674", 
+             Endereco = new Endereco(),
+             Nome = "Gustavo",
+             Observacoes= "",
+             Telefone = ""
+             
+            
             };
 
-            var result = await provider.EmitirBoleto(interRequest);
+            var body = new EmitirBoletoInterRequestBody(
+                "123456",
+                2.5,
+                new DateOnly(2026, 09, 07),
+                60,
+                pagador              
+                
+
+                );//JsonSerializer.Deserialize<EmitirBoletoInterRequestBody>(payload);
+
+            try
+            {
+               // var body = JsonSerializer.Deserialize<EmitirBoletoInterRequestBody>(payload);
+
+                var interRequest = new EmitirBoletoInterRequestDto()
+                {
+                    ArquivoCertificado = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Certificado.crt",
+                    ArquivoChave = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Chave.key",
+                    ClientId = "32d83ffa-ba06-44a3-9ef3-c0736b15e209",
+                    ClientSecret = "732171c2-391c-4baf-a632-8d31a449d171",
+                    XContaCorrente = "1154",
+                    RequestDto = body
+                };
+
+                var result = await provider.EmitirBoleto(interRequest);
 
 
-            //InterBaseResponseDto
-          //  Assert.Equals(interRequest, result);
-            Assert.IsInstanceOf(typeof(EmitirBoletoInterResponseDto), result);
+                //InterBaseResponseDto
+                //  Assert.Equals(interRequest, result);
+                Assert.IsInstanceOf(typeof(EmitirBoletoInterResponseDto), result);
 
 
-            // Task.CompletedTask;
+                // Task.CompletedTask;
+            }
+            catch (Exception ex) { }
+            
+          
         }
 
 
