@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
 using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
-    public class EmitirBoletoInterResponseDto : InterBaseResponseDto
+    public class EmitirBoletoInterResponseDto : InterBaseResponseDto, ResponseBase
     {
         [JsonPropertyName("codigoSolicitacao")]
-        public string CodigoSolicitacao { get; set; } //   "codigoSolicitacao": "183e982a-34e5-4bc0-9643-def5432a"
+        public string CodigoSolicitacao { get; set; }
     }
 }

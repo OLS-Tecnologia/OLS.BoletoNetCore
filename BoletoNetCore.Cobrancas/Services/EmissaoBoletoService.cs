@@ -23,14 +23,12 @@ namespace BoletoNetCore.Cobrancas.Services
                 EmitirBoletoInterRequestDto interRequest = null;
                 EmitirBoletoInterResponseDto interResponse = null;
 
-                var result = await provider.EmitirBoleto(interRequest);               
+                //var result = await provider.  .EmitirBoleto(interRequest);               
 
-                if (result is not null)
-                {
-                    Console.WriteLine(result);  // validation result   
-                }
-
-
+                //if (result is not null)
+                //{
+                //    Console.WriteLine(result);  // validation result   
+                //}
                 
             }
             catch (Exception ex) {

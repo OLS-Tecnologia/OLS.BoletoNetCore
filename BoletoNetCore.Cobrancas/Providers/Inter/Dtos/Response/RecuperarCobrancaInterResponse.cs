@@ -1,9 +1,11 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
+using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
 using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
-    public class RecuperarCobrancaInterResponse : InterBaseResponseDto
+    public class RecuperarCobrancaInterResponse : InterBaseResponseDto, ResponseBase
     {
 
         [property: JsonPropertyName("cobranca")]
@@ -41,7 +43,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
         [property: JsonPropertyName("descontos")] IReadOnlyList<Desconto>? Descontos,
         [property: JsonPropertyName("multa")] Multa? Multa,
         [property: JsonPropertyName("mora")] Mora? Mora,
-        [property: JsonPropertyName("pagador")] PagadorBase? Pagador
+        [property: JsonPropertyName("pagador")] PagadorInter? Pagador
     );
 
     public record Desconto(

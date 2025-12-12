@@ -1,13 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
+using Newtonsoft.Json;
 using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
-    public class AtualizarBoletoInterResponseDto : InterBaseResponseDto
+    public class AtualizarBoletoInterResponseDto : InterBaseResponseDto, ResponseBase
     {
 
         [JsonPropertyName("status")]
-        public StatusAtualizacaoBoletoInter Status {  get; set; }
+        public string  Status {  get; set; } //StatusAtualizacaoBoletoInter
 
         [JsonPropertyName("mensagem")]
         public string Mensagem {  get; set; }

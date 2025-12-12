@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request
 {
-    public class RequestBase
+    public interface RequestBase
     {
     }
 }

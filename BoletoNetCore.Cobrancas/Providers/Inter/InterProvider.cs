@@ -2,7 +2,9 @@
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.Inter.Utills;
+using OLS.LibCore.Validate;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Org.BouncyCastle.Ocsp;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -10,22 +12,30 @@ using System.Text.Json;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter
 {
-    public class InterProvider : IProviderBoleto<InterBaseRequestDto, InterBaseResponseDto>
+    public class InterProvider :
+        IProviderEmitirBoleto<EmitirBoletoInterRequestDto>,
+        IProviderBaixarBoleto<CancelamentoBoletoInterRequestDto>,
+        IProviderConsultaBoleto<ConsultarBoletoInterRequestDto>,
+        IProviderAlterarVencimento<AtualizarboletoInterRequestDto>,
+         IProviderAlterarValorBoleto<AtualizarboletoInterRequestDto>,
+        IProviderBoleto
     {
-        public  bool SuportaCnab { get; set; } = false;
+        public bool SuportaCnab { get; set; } = false;
         public bool SuportaApi { get; set; } = true;
 
         public string ApiUrl { get; set; } = "https://cdpj-sandbox.partners.uatinter.co";
 
         internal static TokenAcesso TokenRequest { get; set; } = new TokenAcesso(); // gerado com permissão de leitura
         private static SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
+    
 
-     
 
-        public  async Task<InterBaseResponseDto>  EmitirBoleto(InterBaseRequestDto request)
+        public  async Task<ValidationResult>  EmitirBoleto(EmitirBoletoInterRequestDto request)
         {
+            ValidationResult _validateResult = new();
             try
             {
+                
                 string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
                 HttpClient client = new HttpClient();
@@ -39,40 +49,31 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 //Criar uma cobrança
                 var retorno = await CriarCobranca(ApiUrl, request,  client, cert, bearerToken);
 
-                ConsultarBoletoInterRequestDto ConsultarBoletoRequest = new()
-                {
-                    ArquivoCertificado = request.ArquivoCertificado,
-                    ArquivoChave = request.ArquivoChave,
-                    ClientId = request.ClientId,
-                    ClientSecret = request.ClientSecret,
-                    CodigoSolicitacao = retorno?.CodigoSolicitacao
-                };
+                var ConsultarBoletoRequest = new ConsultarBoletoInterRequestDto(retorno?.CodigoSolicitacao, request.XContaCorrente,
+                    request.ClientId, request.ClientSecret,request.ArquivoCertificado, request.ArquivoChave);              
 
                 // Buscar informações do boleto
                 var detalhesBoleto = await ConsultaBoleto(ConsultarBoletoRequest);
-
-
-                return retorno;
+                
+                return detalhesBoleto;
 
             }
             catch (Exception ex)
             {
-                // logar erro
+               
 
-                Console.WriteLine("Error: " + ex);
-                // throw;
-                return null;
+                _validateResult.AddMensagem(ex.Message);
+                return _validateResult;               
             }
 
         }
 
 
-        public async  Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto interReq)
-        {           
+        public async  Task<HttpStatusCode> BaixarBoleto(CancelamentoBoletoInterRequestDto req)
+        {          
 
             try
-            {
-                CancelamentoBoletoInterRequestDto req = ((CancelamentoBoletoInterRequestDto)interReq);
+            {              
 
                 string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
@@ -101,88 +102,136 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                     var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response_detalhe = await client.PostAsync(uriCancelar, content);
-                    string resultado = "";
-                    if (response_detalhe.IsSuccessStatusCode)
+
+                    if (!response_detalhe.IsSuccessStatusCode)
                     {
-                        resultado = await response_detalhe.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
-                    }
-                    
+                        return response_detalhe.StatusCode;
+                    }                     
 
                     return HttpStatusCode.Accepted;
                 }
 
             }
             catch (Exception ex)
-            {
-                Console.WriteLine(" Error: " + ex);
+            {               
                 return HttpStatusCode.BadRequest;
-
             }
            
 
         }
 
-
-
-        public async Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto interReq)
+        public async Task<ValidationResult> ConsultaBoleto(ConsultarBoletoInterRequestDto req)
         {
-
-            ConsultarBoletoInterRequestDto req = (ConsultarBoletoInterRequestDto)interReq;
-
-
-            HttpClient client = new HttpClient();
-            string bearerToken = "";
-
-            X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
-       
-            string permissoes = "boleto-cobranca.read";
-
-            bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
-
-            string URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v3/cobrancas/{req.CodigoSolicitacao}";
-
-            var clientHandler = new HttpClientHandler();
-            clientHandler.ClientCertificates.Add(cert);
-            clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-
-            using (client = new HttpClient(clientHandler))
+            ValidationResult _validateResult = new();
+            try
             {
-                client.DefaultRequestHeaders.Accept.Clear();
-                client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
-                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
+                HttpClient client = new HttpClient();
+                string bearerToken = "";
 
+                X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
 
-                HttpResponseMessage recuperarCobranca = await client.GetAsync(URI_Detalhe_boleto);
+                string permissoes = "boleto-cobranca.read";
 
-                string resultRecuperarCobranca = "";
-                if (recuperarCobranca.IsSuccessStatusCode)
+                bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
+
+                string URI_Detalhe_boleto = $"{ApiUrl}/cobranca/v3/cobrancas/{req.CodigoSolicitacao}";
+
+                var clientHandler = new HttpClientHandler();
+                clientHandler.ClientCertificates.Add(cert);
+                clientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
+
+                using (client = new HttpClient(clientHandler))
                 {
-                    resultRecuperarCobranca = await recuperarCobranca.Content.ReadAsStringAsync();
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
+                    client.DefaultRequestHeaders.Add("x-conta-corrente", $"{req.XContaCorrente}");
 
-                    return JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
 
-                }
-                else
-                {
-                    Console.WriteLine("Error, received status code {0}: {1}", recuperarCobranca?.StatusCode, recuperarCobranca?.ReasonPhrase);
+                    HttpResponseMessage recuperarCobranca = await client.GetAsync(URI_Detalhe_boleto);
 
-                    throw new Exception($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
+                    string resultRecuperarCobranca = "";
+                    if (recuperarCobranca.IsSuccessStatusCode)
+                    {
+                        resultRecuperarCobranca = await recuperarCobranca.Content.ReadAsStringAsync();
+
+                        var response =  JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
+                        _validateResult.Object = response;
+
+                        return _validateResult;
+
+                    }
+                    else
+                    {                       
+                        _validateResult.AddMensagem($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
+                        _validateResult.AddMensagem($"Código Http: {recuperarCobranca?.StatusCode} : {recuperarCobranca?.ReasonPhrase}");
+
+                        return _validateResult;
+                    }
+
                 }
 
             }
+            catch (Exception ex) {
 
-
+                _validateResult.AddMensagem(ex.Message);
+                return _validateResult;
+                
+            }
         }
 
-        // ----------------------------------------------------------------------------------------------------------------
-        // ----------------------------------------------------------------------------------------------------------------
+        /// <summary>
+        /// Após editar uma cobrança, seu valor pode levar até 30 minutos para ser atualizado.
+        /// Atualiza a data de vencimento do boleto e o valor na mesma requisição
+        /// </summary>    
+        /// <returns></returns>
+        public async Task<ValidationResult> AlterarDataDeVencimentoBoleto(AtualizarboletoInterRequestDto request)
+        {
+            ValidationResult _validateResult = new();
+            try
+            {
+                var result = await AtualizarBoleto(request);
+                _validateResult.Object = result;
+
+                return _validateResult;
+
+            }
+            catch (Exception ex)
+            {
+                _validateResult.AddMensagem(ex.Message);
+
+                return _validateResult;
+
+            }
+        }
+
+        /// <summary>
+        /// Após editar uma cobrança, seu valor pode levar até 30 minutos para ser atualizado.
+        /// Atualiza a data de vencimento do boleto e o valor na mesma requisição
+        /// </summary>    
+        /// <returns></returns>
+        public async Task<ValidationResult> AlterarValorBoleto(AtualizarboletoInterRequestDto request)
+        {
+            ValidationResult _validateResult = new();
+            try
+            {
+                var result = await AtualizarBoleto(request);
+                _validateResult.Object = result;
+
+                return _validateResult;
+
+            }
+            catch (Exception ex) {
+                _validateResult.AddMensagem(ex.Message);
+
+                return _validateResult;          
+            
+            }
+        }
+        
+
         // ----------------------------------------------------------------------------------------------------------------
 
-        private async Task<EmitirBoletoInterResponseDto> CriarCobranca(string urlInter, InterBaseRequestDto request, HttpClient client, X509Certificate cert, string? bearerToken)
+        private async Task<EmitirBoletoInterResponseDto> CriarCobranca(string urlInter, EmitirBoletoInterRequestDto request, HttpClient client, X509Certificate cert, string? bearerToken)
         {           
 
             var clientHandlerOauth = new HttpClientHandler();
@@ -195,9 +244,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{bearerToken}");
-                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{((EmitirBoletoInterRequestDto)request).XContaCorrente}");
+                client.DefaultRequestHeaders.Add("x-conta-corrente", $"{request.XContaCorrente}");
                
-                var payload = JsonSerializer.Serialize(((EmitirBoletoInterRequestDto)request).RequestDto);
+                var payload = JsonSerializer.Serialize(request.RequestDto);
               
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
@@ -219,18 +268,15 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             }
         }
 
-
-
         private async Task<AtualizarBoletoInterResponseDto> AtualizarBoleto(AtualizarboletoInterRequestDto req)
         {
-            string permissoes = "boleto-cobranca.write";
+            string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
             HttpClient client = new HttpClient();       
 
             X509Certificate cert = obterCert(req.ArquivoCertificado, req.ArquivoChave);
 
-            string bearerToken = "";
-           
+            string bearerToken = "";           
            
             bearerToken = await obterBearerToken(ApiUrl, req.ClientId, req.ClientSecret, permissoes, client, cert);
 
@@ -253,18 +299,17 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 // Wrap our JSON inside a StringContent object
                 var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response_detalhe = client.PostAsync(uriEditar, content).GetAwaiter().GetResult();
+                HttpResponseMessage response_detalhe = await client.PatchAsync(uriEditar, content);
                 string resultado = "";
                 if (response_detalhe.IsSuccessStatusCode)
                 {
-                    resultado = response_detalhe.Content.ReadAsStringAsync().Result;
+                    resultado = await response_detalhe.Content.ReadAsStringAsync();
                 }
                 else
                 {
                     throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
                 }
-
-                client.Dispose();
+                
 
                 return JsonSerializer.Deserialize<AtualizarBoletoInterResponseDto>(resultado);
             }
@@ -331,7 +376,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             
         }
 
-
         private static X509Certificate obterCert(String certPem, String keyPem)
         {
             string certificado = File.ReadAllText(certPem);
@@ -348,32 +392,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 X509KeyStorageFlags.PersistKeySet);
          
         }
-
-
-
-
-        // TODO: Metodos serão apagados
-        //public Task<HttpStatusCode> BaixarBoleto(InterBaseRequestDto request)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public Task<InterBaseResponseDto> AlterarDataDeVencimentoBoleto(InterBaseRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public Task<InterBaseResponseDto> ConsultaBoleto(InterBaseRequestDto request)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        public Task<InterBaseResponseDto> AlterarValorBoleto(InterBaseRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
-    }
-  
+               
+    } 
 
 
 }

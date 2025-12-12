@@ -1,16 +1,28 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
+using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
-    public  class EmitirBoletoInterRequestDto : InterBaseRequestDto
+    public  class EmitirBoletoInterRequestDto : InterBaseRequestDto, RequestBase
     {
+      
         public string XContaCorrente { get; set; }// header parameter
 
         public EmitirBoletoInterRequestBody RequestDto { get; set; }
+
+        public EmitirBoletoInterRequestDto(string xContaCorrente, EmitirBoletoInterRequestBody requestDto, string clientId, string clientSecret, string arquivoCertificado, string arquivoChave) 
+            : base(clientId, clientSecret, arquivoCertificado, arquivoChave)
+        {
+            XContaCorrente = xContaCorrente;
+            RequestDto = requestDto;
+        }
+
 
     }
 
@@ -36,7 +48,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("pagador")]
         [Required]
-        public PagadorBase Pagador { get; set; }
+        public PagadorInter Pagador { get; set; }
 
         [JsonPropertyName("desconto")]
         public Desconto? Desconto { get; set; }
@@ -57,10 +69,10 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("formasRecebimento")]
         public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
+      
 
-        public EmitirBoletoInterRequestBody() { }
-        public EmitirBoletoInterRequestBody(string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
-            PagadorBase pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
+        public EmitirBoletoInterRequestBody (string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
+            PagadorInter pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
             BeneficiarioFinal? beneficiarioFinal = null, ModeloBoletoEnum? modeloBoleto = null)
         {
             DateOnly DataAtual = new();
@@ -97,110 +109,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
             }
 
-
-
-            if (mora is not null)
-            {
-
-                if (mora.Codigo.Equals(MoraCodigosEnum.ISENTO))
-                {
-                    mora = null;
-
-                }
-                else
-                {
-
-                    if (mora.Codigo.Equals(MoraCodigosEnum.VALORDIA))
-                    {
-
-                        if (mora.Valor is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar o valor de juros mora por dia.");
-                        }
-
-                    }
-                    else if (mora.Codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
-                    {
-
-                        if (mora.Taxa is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar a taxa mensal de juros mora.");
-                        }
-
-                    }
-
-                }
-
-            }
-
-            if (multa is not null)
-            {
-
-                if (multa.Codigo.Equals(MultaCodigosEnum.ISENTO))
-                {
-                    multa = null;
-
-                }
-                else
-                {
-
-                    if (multa.Codigo.Equals(MultaCodigosEnum.VALORFIXO))
-                    {
-
-                        if (multa.Valor is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar campo valorMulta.");
-                        }
-
-                    }
-                    else if (multa.Codigo.Equals(MultaCodigosEnum.PERCENTUAL))
-                    {
-
-                        if (multa.Taxa is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar o campo taxaMulta.");
-                        }
-
-                    }
-
-                }
-
-            }
-
-
-            if (desconto is not null)
-            {
-
-                if (desconto.Codigo.Equals(TipoDesconto.SEMDESCONTO))
-                {
-                    desconto = null;
-
-                }
-                else
-                {
-
-                    if (desconto.Codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
-                    {
-
-                        if (desconto.Valor is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar o campo valorDesconto.");
-                        }
-
-                    }
-                    else if (desconto.Codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
-                    {
-
-                        if (desconto.Taxa is null)
-                        {
-                            ListErrosValidacao.Add("Necessário informar o campo taxaDesconto.");
-                        }
-
-                    }
-
-                }
-
-            }
+                    
 
             List<string> formasRecebimento = new List<string>();
 
@@ -244,9 +153,41 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("codigo")]
         [Required]
-        public MoraCodigosEnum Codigo { get; set; }   
+        public MoraCodigosEnum Codigo { get; set; }
 
+        public Mora(double? valor, double? taxa, MoraCodigosEnum codigo)
+        {
 
+            List<string> ListErrosValidacaoMora = new List<string>();
+
+            if (codigo.Equals(MoraCodigosEnum.VALORDIA))
+            {
+
+                if (valor is null)
+                {
+                    ListErrosValidacaoMora.Add("Necessário informar o valor de juros mora por dia.");
+                }
+
+            }
+            else if (codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
+            {
+
+                if (taxa is null)
+                {
+                    ListErrosValidacaoMora.Add("Necessário informar a taxa mensal de juros mora.");
+                }
+
+            }
+
+            if (ListErrosValidacaoMora.Count > 0) {
+
+                return;
+            }
+
+            Valor = valor;
+            Taxa = taxa;
+            Codigo = codigo;
+        }
     }
 
     public class Multa
@@ -259,9 +200,47 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("codigo")]
         [Required]
-        public MultaCodigosEnum Codigo { get; set; }
+        public string Codigo { get; set; }
 
-      
+        public Multa(MultaCodigosEnum codigo, double? valor, double? taxa)
+        {
+            List<string> ListErrosValidacaoMulta = new List<string>();
+
+
+            if (codigo.Equals(MultaCodigosEnum.VALORFIXO))
+            {
+
+                if (valor is null)
+                {
+                    ListErrosValidacaoMulta.Add("Necessário informar campo valorMulta.");
+                }
+
+            }
+            else if (codigo.Equals(MultaCodigosEnum.PERCENTUAL))
+            {
+
+                if (taxa is null)
+                {
+                   ListErrosValidacaoMulta.Add("Necessário informar o campo taxaMulta.");
+                }
+
+            }
+            else
+            {
+                ListErrosValidacaoMulta.Add("Tipo de multa inválido. Valores esperados: VALORFIXO, PERCENTUAL");
+            }
+
+
+            if (ListErrosValidacaoMulta.Count > 0)
+            {
+
+                return;
+            }
+
+            Valor = valor;
+            Taxa = taxa;
+            Codigo = Enum.GetName< MultaCodigosEnum>(codigo) ?? "";
+        }
     }
 
     public class Desconto
@@ -274,13 +253,58 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("codigo")]
         [Required]
-        public TipoDesconto Codigo { get; set; }
+        public string Codigo { get; set; } // TipoDesconto
 
+        /// <summary>
+        ///     Quantidade de dias antes do vencimento que será aplicado o desconto.
+        /// </summary>
         [JsonPropertyName("quantidadeDias")]
-        [Required]
-        public int? QuantidadeDias { get; set; } = 1; // Quantidade de dias antes do vencimento que será aplicado o desconto.
+        [Required]       
+        public int QuantidadeDias { get; set; } = 1; 
+
+        public Desconto(TipoDesconto codigo, int quantidadeDias, double? valor, double? taxa)
+        {          
+            List<string> ListErrosValidacaoDesconto = new List<string>();
+
+            if (codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
+            {
+
+                if (valor is null)
+                {
+                        ListErrosValidacaoDesconto.Add("Necessário informar o campo valorDesconto.");
+                }
+
+            }
+            else if (codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
+            {
+
+                if (taxa is null)
+                {
+                ListErrosValidacaoDesconto.Add("Necessário informar o campo taxaDesconto.");
+                }
+
+            }
+            else
+            {
+                ListErrosValidacaoDesconto.Add("Tipo de desconto inválido. Valores esperados: PERCENTUALDATAINFORMADA, VALORFIXODATAINFORMADA ");
+            }
+
+            
 
 
+            if (ListErrosValidacaoDesconto.Count> 0)
+            {
+
+                return;
+                // retornar validation result com a lista de erros
+
+            }
+
+            Valor = valor;
+            Taxa = taxa;
+            Codigo = Enum.GetName<TipoDesconto>(codigo) ?? "";
+            QuantidadeDias = quantidadeDias;
+        }
     }
 
 }

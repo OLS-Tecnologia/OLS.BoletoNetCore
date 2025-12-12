@@ -12,39 +12,14 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
 {
     public class PagadorBase 
     {
-        //public PagadorBase()
-        //{
-        //    NumeroCpfCnpj = base.CpfCnpj;
-        //}
-
-        //[JsonPropertyName("ddd")]
-        //public string Ddd { get; set; }
-
-        //[JsonPropertyName("telefone")]
-        //public string Telefone { get; set; }
-
-        //[JsonPropertyName("numeroCpfCnpj")] // recebe do campo CpfCnpj da genérica
-        //[Required]
-        //public string NumeroCpfCnpj { get; private set; }
-
-        [JsonPropertyName("cpfCnpj")]
-        public string CpfCnpj { get; set; }
-
-        //[JsonPropertyName("numeroCpfCnpj")] // recebe de CpfCnpj
-        //public string NumeroCpfCnpj { get; private set; }
-
 
         [JsonPropertyName("nome")]
         [Required]
         public string Nome { get; set; }
 
-        [JsonPropertyName("email")]
-        [Required]
-        public string Email { get; set; }
-
-        [JsonPropertyName("tipoPessoa")] 
-        [Required]
-        public string TipoPessoa { get; set; } //Enum TipoPessoa
+        [JsonPropertyName("email")]       
+        public string? Email { get; set; }
+       
 
         [JsonPropertyName("cep")]
         [Required]
@@ -52,7 +27,7 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
 
         [JsonPropertyName("uf")]
         [Required]
-        public string Uf { get; set; } //UfBrasil enum
+        public string Uf { get; set; } 
 
         [JsonPropertyName("cidade")]
         [Required]
@@ -61,24 +36,24 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
         [JsonPropertyName("endereco")]
         [Required]
         public string Endereco { get; set; }
-
-        [JsonPropertyName("numero")]
-        [Required]
-        public string Numero { get; set; }
+       
 
         [JsonPropertyName("bairro")]
-        public string Bairro { get; set; }
+        public string? Bairro { get; set; }
 
-        [JsonPropertyName("ddd")]
-        public string Ddd { get; set; }
+        public PagadorBase(string nome, string cep, UfBrasil uf, string cidade, string endereco, string? email = null, string? bairro= null)
+        {
+            Nome = nome;
+            Email = email;
+            Cep = cep;
+            Uf = Enum.GetName<UfBrasil>(uf) ?? "";
+            Cidade = cidade;
+            Endereco = endereco;
+            Bairro = bairro;
+        }
 
-        [JsonPropertyName("telefone")]
-        public string Telefone { get; set; }
-
-
-        [JsonPropertyName("complemento")]
-        public string Complemento { get; set; }
-
-
+        public PagadorBase()
+        {
+        }
     }
 }

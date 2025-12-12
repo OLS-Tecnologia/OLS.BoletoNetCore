@@ -8,7 +8,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Factory
 {
     public class ProviderFactory 
     {     
-        public static IProviderBoleto<InterBaseRequestDto, InterBaseResponseDto> GetProvider(Bancos provider)
+        public static IProviderBoleto GetProvider(Bancos provider)
         {
             switch (provider)
             {
