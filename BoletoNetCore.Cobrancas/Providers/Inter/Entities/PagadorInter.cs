@@ -6,20 +6,7 @@ using System.Text.Json.Serialization;
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Entities
 {
     public class PagadorInter: PagadorBase
-    {
-        public PagadorInter(string cpfCnpj, TipoPessoa tipoPessoa, string nome, string cep, UfBrasil uf, string cidade, string endereco, string bairro,
-            string? numero = null, string? ddd = null, string? telefone = null, string? complemento = null, string? email = null)
-            : base(nome, cep, uf, cidade, endereco, email)
-        {
-
-            CpfCnpj = cpfCnpj;
-            Numero = numero;
-            Ddd = ddd;
-            Telefone = telefone;
-            Complemento = complemento;
-            TipoPessoa = Enum.GetName<TipoPessoa>(tipoPessoa) ?? "";
-            Bairro = bairro;
-        }
+    {    
 
         public PagadorInter()  { }
         

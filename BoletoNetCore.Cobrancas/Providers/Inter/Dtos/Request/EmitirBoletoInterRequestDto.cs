@@ -2,6 +2,7 @@
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -13,7 +14,141 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         public string XContaCorrente { get; set; }// header parameter
 
         public EmitirBoletoInterRequestBody RequestDto { get; set; }
-     
+
+
+        public bool IsValid()
+        {
+            DateOnly DataAtual = DateOnly.FromDateTime(new DateTime());
+
+            OLS.LibCore.Validate.ValidationResult ListErrosValidacao = new();
+
+
+            if (RequestDto.DataVencimento < DataAtual)
+            {
+                ListErrosValidacao.AddMensagem("Data de vencimento da cobranca deve ser data futura.");
+            }
+
+
+
+            if (!Enum.IsDefined(typeof(TipoPessoa), RequestDto.Pagador.TipoPessoa))
+            {
+                string options = string.Join(", ", Enum.GetValues<TipoPessoa>());
+
+                ListErrosValidacao.AddMensagem($"Valor Inválido para tipo Pessoa. Valores aceitos: {options}");
+
+            }
+
+            if (!Enum.IsDefined(typeof(UfBrasil), RequestDto.Pagador.Uf))
+            {
+                string options = string.Join(", ", Enum.GetValues<UfBrasil>());
+
+                ListErrosValidacao.AddMensagem($"Valor Inválido para UF do pagador. Valores aceitos: {options}");
+
+            }
+
+
+            if (RequestDto.Mensagem is not null)
+            {
+
+                if (RequestDto.Mensagem.Length > 5)
+                {
+
+                    ListErrosValidacao.AddMensagem("São permitidas apenas 5 mensagens de instrução.");
+
+                }
+                else
+                {
+                    foreach (string msg in RequestDto.Mensagem)
+                    {
+                        if (msg.Length > 78)
+                        {
+                            ListErrosValidacao.AddMensagem("As mensagens de instrução devem ter no máximo 78 caracteres.");
+                        }
+                    }
+                }
+            }
+
+            if (RequestDto.Mora is not null)
+            {
+                if (RequestDto.Mora.Codigo.Equals(MoraCodigosEnum.VALORDIA))
+                {
+                    if (RequestDto.Mora.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o valor de juros mora por dia.");
+                    }
+                }
+                else if (RequestDto.Mora.Codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
+                {
+                    if (RequestDto.Mora.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar a taxa mensal de juros mora.");
+                    }
+                }
+            }
+
+            if (RequestDto.Multa is not null)
+            {
+
+                if (RequestDto.Multa.Codigo.Equals(MultaCodigosEnum.VALORFIXO))
+                {
+
+                    if (RequestDto.Multa.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar campo valorMulta.");
+                    }
+
+                }
+                else if (RequestDto.Multa.Codigo.Equals(MultaCodigosEnum.PERCENTUAL))
+                {
+
+                    if (RequestDto.Multa.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaMulta.");
+                    }
+
+                }
+                else
+                {
+                    ListErrosValidacao.AddMensagem("Tipo de multa inválido. Valores esperados: VALORFIXO, PERCENTUAL");
+                }
+
+            }
+
+            if (RequestDto.Desconto is not null)
+            {
+                if (RequestDto.Desconto.Codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
+                {
+
+                    if (RequestDto.Desconto.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo valorDesconto.");
+                    }
+
+                }
+                else if (RequestDto.Desconto.Codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
+                {
+
+                    if (RequestDto.Desconto.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaDesconto.");
+                    }
+
+                }
+                else
+                {
+                    ListErrosValidacao.AddMensagem("Tipo de desconto inválido. Valores esperados: PERCENTUALDATAINFORMADA, VALORFIXODATAINFORMADA ");
+                }
+            }
+
+            if (!ListErrosValidacao.IsValid)
+            {
+                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
+                throw new Exception(ListErrosValidacao.Message);
+            }
+
+
+            return ListErrosValidacao.IsValid;
+        }
     }
 
     public class EmitirBoletoInterRequestBody
@@ -62,120 +197,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
             
            
 
-        public bool IsValid()
-        {
-            DateOnly DataAtual = DateOnly.FromDateTime(new DateTime());
-
-            OLS.LibCore.Validate.ValidationResult ListErrosValidacao = new();
-
-
-            if (DataVencimento < DataAtual)
-            {
-                ListErrosValidacao.AddMensagem("Data de vencimento da cobranca deve ser data futura.");
-            }
-
-            if (Mensagem is not null)
-            {
-
-                if (Mensagem.Length > 5)
-                {
-
-                    ListErrosValidacao.AddMensagem("São permitidas apenas 5 mensagens de instrução.");
-
-                }
-                else
-                {
-                    foreach (string msg in Mensagem)
-                    {
-                        if (msg.Length > 78)
-                        {
-                            ListErrosValidacao.AddMensagem("As mensagens de instrução devem ter no máximo 78 caracteres.");
-                        }
-                    }
-                }
-            }
-
-            if (Mora is not null)
-            {
-                if (Mora.Codigo.Equals(MoraCodigosEnum.VALORDIA))
-                {
-                    if (Mora.Valor is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar o valor de juros mora por dia.");
-                    }
-                }
-                else if (Mora.Codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
-                {
-                    if (Mora.Taxa is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar a taxa mensal de juros mora.");
-                    }
-                }
-            }
-
-            if (Multa is not null)
-            {
-
-                if (Multa.Codigo.Equals(MultaCodigosEnum.VALORFIXO))
-                {
-
-                    if (Multa.Valor is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar campo valorMulta.");
-                    }
-
-                }
-                else if (Multa.Codigo.Equals(MultaCodigosEnum.PERCENTUAL))
-                {
-
-                    if (Multa.Taxa is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaMulta.");
-                    }
-
-                }
-                else
-                {
-                    ListErrosValidacao.AddMensagem("Tipo de multa inválido. Valores esperados: VALORFIXO, PERCENTUAL");
-                }
-
-            }
-
-            if(Desconto is not null)
-            {
-                if (Desconto.Codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
-                {
-
-                    if (Desconto.Valor is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar o campo valorDesconto.");
-                    }
-
-                }
-                else if (Desconto.Codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
-                {
-
-                    if (Desconto.Taxa is null)
-                    {
-                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaDesconto.");
-                    }
-
-                }
-                else
-                {
-                    ListErrosValidacao.AddMensagem("Tipo de desconto inválido. Valores esperados: PERCENTUALDATAINFORMADA, VALORFIXODATAINFORMADA ");
-                }
-            }
-
-            if (!ListErrosValidacao.IsValid)
-            {
-                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
-                throw new Exception(ListErrosValidacao.Message);
-            }
-
-
-            return ListErrosValidacao.IsValid;
-        }    
+      
     }
    
     public class Mora

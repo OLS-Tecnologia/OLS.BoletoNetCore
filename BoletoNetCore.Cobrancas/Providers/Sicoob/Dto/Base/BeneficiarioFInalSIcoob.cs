@@ -11,7 +11,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Base
     public class BeneficiarioFinalSicoob
     {
         [JsonPropertyName("numeroCpfCnpj")] 
-        public string NumeroCpfCnpj { get; private set; }
+        public string NumeroCpfCnpj { get;  set; }
 
         [JsonPropertyName("nome")]
         [Required]

@@ -41,6 +41,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
             ValidationResult _validateResult = new();
             try
             {
+                request.IsValid();
                 
                 string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
@@ -55,8 +56,17 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 //Criar uma cobrança
                 var retorno = await CriarCobranca(ApiUrl, request,  client, cert, bearerToken);
 
-                var ConsultarBoletoRequest = new ConsultarBoletoInterRequestDto(retorno?.CodigoSolicitacao, request.XContaCorrente,
-                    request.ClientId, request.ClientSecret,request.ArquivoCertificado, request.ArquivoChave);              
+                var ConsultarBoletoRequest = new ConsultarBoletoInterRequestDto()
+                {
+                   CodigoSolicitacao = retorno?.CodigoSolicitacao,
+                   ClientSecret = request.ClientSecret,
+                   XContaCorrente = request.XContaCorrente,
+                   ArquivoCertificado = request.ArquivoCertificado,
+                   ArquivoChave = request.ArquivoChave,
+                   ClientId = request.ClientId 
+
+                };  
+                
 
                 // Buscar informações do boleto
                 var detalhesBoleto = await ConsultaBoleto(ConsultarBoletoRequest);
@@ -79,10 +89,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
         {
             ValidationResult _validateResult = new ValidationResult();
 
-
             try
             {              
-
+                
                 string permissoes = "boleto-cobranca.write boleto-cobranca.read";
 
                 HttpClient client = new HttpClient();
