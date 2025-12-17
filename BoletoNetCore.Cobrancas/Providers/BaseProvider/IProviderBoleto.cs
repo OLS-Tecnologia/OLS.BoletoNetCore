@@ -7,12 +7,7 @@ using System.Net;
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
 {  
-    public interface IProviderBoleto 
-        //IProviderEmitirBoleto<RequestBase, ResponseBase>,
-        //IProviderBaixarBoleto<RequestBase>,
-        //IProviderAlterarVencimento<RequestBase, ResponseBase>,
-        //IProviderAlterarValorBoleto<RequestBase, ResponseBase>,
-        // IProviderConsultaBoleto<RequestBase, ResponseBase>
+    public interface IProviderBoleto
     {
 
     }
@@ -26,7 +21,7 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
     public interface IProviderBaixarBoleto<TReq>
     where TReq : RequestBase
     {
-        Task<HttpStatusCode> BaixarBoleto(TReq request);
+        Task<ValidationResult> BaixarBoleto(TReq request);
     }
 
     public interface IProviderAlterarVencimento<TReq>
@@ -50,3 +45,6 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
 
 
 }
+
+/*
+ */

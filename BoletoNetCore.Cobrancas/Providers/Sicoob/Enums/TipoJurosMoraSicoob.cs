@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Enums
-{  
-
-    public enum SituacaoBoletoSicoobEnum
+{
+    public enum TipoJurosMoraSicoob
     {
-        ENTRADA_NORMAL = 1,
-        BAIXADO = 2,
-        LIQUIDADO = 3
+        VALOR_POR_DIA = 1,
+        TAXA_MENSAL = 2, 
+        ISENTO = 3
     }
 }

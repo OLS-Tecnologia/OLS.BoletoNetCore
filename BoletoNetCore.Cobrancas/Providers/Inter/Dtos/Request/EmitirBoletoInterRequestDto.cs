@@ -1,7 +1,6 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
@@ -10,20 +9,11 @@ using System.Text.Json.Serialization;
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
     public  class EmitirBoletoInterRequestDto : InterBaseRequestDto, RequestBase
-    {
-      
+    {     
         public string XContaCorrente { get; set; }// header parameter
 
         public EmitirBoletoInterRequestBody RequestDto { get; set; }
-
-        public EmitirBoletoInterRequestDto(string xContaCorrente, EmitirBoletoInterRequestBody requestDto, string clientId, string clientSecret, string arquivoCertificado, string arquivoChave) 
-            : base(clientId, clientSecret, arquivoCertificado, arquivoChave)
-        {
-            XContaCorrente = xContaCorrente;
-            RequestDto = requestDto;
-        }
-
-
+     
     }
 
     public class EmitirBoletoInterRequestBody
@@ -69,79 +59,124 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [JsonPropertyName("formasRecebimento")]
         public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
-      
+            
+           
 
-        public EmitirBoletoInterRequestBody (string seuNumero, double valorNominal, DateOnly dataVencimento, int numDiasAgenda,
-            PagadorInter pagador, Desconto? desconto = null, Multa? multa = null, Mora? mora = null, string[]? mensagem = null,
-            BeneficiarioFinal? beneficiarioFinal = null, ModeloBoletoEnum? modeloBoleto = null)
+        public bool IsValid()
         {
-            DateOnly DataAtual = new();
+            DateOnly DataAtual = DateOnly.FromDateTime(new DateTime());
 
-            List<string> ListErrosValidacao = new List<string>();
+            OLS.LibCore.Validate.ValidationResult ListErrosValidacao = new();
 
 
-            if (dataVencimento < DataAtual)
+            if (DataVencimento < DataAtual)
             {
-                ListErrosValidacao.Add("Data de vencimento da cobranca deve ser data futura.");
+                ListErrosValidacao.AddMensagem("Data de vencimento da cobranca deve ser data futura.");
             }
 
-            if (mensagem is not null)
+            if (Mensagem is not null)
             {
 
-                if (mensagem.Length > 5)
+                if (Mensagem.Length > 5)
                 {
 
-                    ListErrosValidacao.Add("São permitidas apenas 5 mensagens de instrução.");
+                    ListErrosValidacao.AddMensagem("São permitidas apenas 5 mensagens de instrução.");
 
                 }
                 else
                 {
-                    foreach (string msg in mensagem)
+                    foreach (string msg in Mensagem)
                     {
                         if (msg.Length > 78)
                         {
-                            ListErrosValidacao.Add("As mensagens de instrução devem ter no máximo 78 caracteres.");
+                            ListErrosValidacao.AddMensagem("As mensagens de instrução devem ter no máximo 78 caracteres.");
                         }
+                    }
+                }
+            }
+
+            if (Mora is not null)
+            {
+                if (Mora.Codigo.Equals(MoraCodigosEnum.VALORDIA))
+                {
+                    if (Mora.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o valor de juros mora por dia.");
+                    }
+                }
+                else if (Mora.Codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
+                {
+                    if (Mora.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar a taxa mensal de juros mora.");
+                    }
+                }
+            }
+
+            if (Multa is not null)
+            {
+
+                if (Multa.Codigo.Equals(MultaCodigosEnum.VALORFIXO))
+                {
+
+                    if (Multa.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar campo valorMulta.");
                     }
 
                 }
-
-
-            }
-
-                    
-
-            List<string> formasRecebimento = new List<string>();
-
-            if (modeloBoleto is not null)
-            {
-                if (modeloBoleto.Equals(ModeloBoletoEnum.COM_PIX))
+                else if (Multa.Codigo.Equals(MultaCodigosEnum.PERCENTUAL))
                 {
-                    formasRecebimento.Add("BOLETO");
-                    formasRecebimento.Add("PIX");
-                }
-                else formasRecebimento.Add("BOLETO");
 
+                    if (Multa.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaMulta.");
+                    }
+
+                }
+                else
+                {
+                    ListErrosValidacao.AddMensagem("Tipo de multa inválido. Valores esperados: VALORFIXO, PERCENTUAL");
+                }
 
             }
-            else formasRecebimento.Add("BOLETO");
+
+            if(Desconto is not null)
+            {
+                if (Desconto.Codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
+                {
+
+                    if (Desconto.Valor is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo valorDesconto.");
+                    }
+
+                }
+                else if (Desconto.Codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
+                {
+
+                    if (Desconto.Taxa is null)
+                    {
+                        ListErrosValidacao.AddMensagem("Necessário informar o campo taxaDesconto.");
+                    }
+
+                }
+                else
+                {
+                    ListErrosValidacao.AddMensagem("Tipo de desconto inválido. Valores esperados: PERCENTUALDATAINFORMADA, VALORFIXODATAINFORMADA ");
+                }
+            }
+
+            if (!ListErrosValidacao.IsValid)
+            {
+                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
+                throw new Exception(ListErrosValidacao.Message);
+            }
 
 
-         
-            SeuNumero = seuNumero;
-            ValorNominal = valorNominal;
-            DataVencimento = dataVencimento;
-            NumDiasAgenda = numDiasAgenda;
-            Pagador = pagador;
-            Desconto = desconto;
-            Multa = multa;
-            Mora = mora;
-            Mensagem = mensagem;
-            BeneficiarioFinal = beneficiarioFinal;
-            FormasRecebimento = formasRecebimento;
-        }
+            return ListErrosValidacao.IsValid;
+        }    
     }
-
    
     public class Mora
     {
@@ -154,40 +189,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         [JsonPropertyName("codigo")]
         [Required]
         public MoraCodigosEnum Codigo { get; set; }
-
-        public Mora(double? valor, double? taxa, MoraCodigosEnum codigo)
-        {
-
-            List<string> ListErrosValidacaoMora = new List<string>();
-
-            if (codigo.Equals(MoraCodigosEnum.VALORDIA))
-            {
-
-                if (valor is null)
-                {
-                    ListErrosValidacaoMora.Add("Necessário informar o valor de juros mora por dia.");
-                }
-
-            }
-            else if (codigo.Equals(MoraCodigosEnum.TAXAMENSAL))
-            {
-
-                if (taxa is null)
-                {
-                    ListErrosValidacaoMora.Add("Necessário informar a taxa mensal de juros mora.");
-                }
-
-            }
-
-            if (ListErrosValidacaoMora.Count > 0) {
-
-                return;
-            }
-
-            Valor = valor;
-            Taxa = taxa;
-            Codigo = codigo;
-        }
+       
     }
 
     public class Multa
@@ -201,46 +203,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         [JsonPropertyName("codigo")]
         [Required]
         public string Codigo { get; set; }
-
-        public Multa(MultaCodigosEnum codigo, double? valor, double? taxa)
-        {
-            List<string> ListErrosValidacaoMulta = new List<string>();
-
-
-            if (codigo.Equals(MultaCodigosEnum.VALORFIXO))
-            {
-
-                if (valor is null)
-                {
-                    ListErrosValidacaoMulta.Add("Necessário informar campo valorMulta.");
-                }
-
-            }
-            else if (codigo.Equals(MultaCodigosEnum.PERCENTUAL))
-            {
-
-                if (taxa is null)
-                {
-                   ListErrosValidacaoMulta.Add("Necessário informar o campo taxaMulta.");
-                }
-
-            }
-            else
-            {
-                ListErrosValidacaoMulta.Add("Tipo de multa inválido. Valores esperados: VALORFIXO, PERCENTUAL");
-            }
-
-
-            if (ListErrosValidacaoMulta.Count > 0)
-            {
-
-                return;
-            }
-
-            Valor = valor;
-            Taxa = taxa;
-            Codigo = Enum.GetName< MultaCodigosEnum>(codigo) ?? "";
-        }
+       
     }
 
     public class Desconto
@@ -261,50 +224,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         [JsonPropertyName("quantidadeDias")]
         [Required]       
         public int QuantidadeDias { get; set; } = 1; 
-
-        public Desconto(TipoDesconto codigo, int quantidadeDias, double? valor, double? taxa)
-        {          
-            List<string> ListErrosValidacaoDesconto = new List<string>();
-
-            if (codigo.Equals(TipoDesconto.VALORFIXODATAINFORMADA))
-            {
-
-                if (valor is null)
-                {
-                        ListErrosValidacaoDesconto.Add("Necessário informar o campo valorDesconto.");
-                }
-
-            }
-            else if (codigo.Equals(TipoDesconto.PERCENTUALDATAINFORMADA))
-            {
-
-                if (taxa is null)
-                {
-                ListErrosValidacaoDesconto.Add("Necessário informar o campo taxaDesconto.");
-                }
-
-            }
-            else
-            {
-                ListErrosValidacaoDesconto.Add("Tipo de desconto inválido. Valores esperados: PERCENTUALDATAINFORMADA, VALORFIXODATAINFORMADA ");
-            }
-
-            
-
-
-            if (ListErrosValidacaoDesconto.Count> 0)
-            {
-
-                return;
-                // retornar validation result com a lista de erros
-
-            }
-
-            Valor = valor;
-            Taxa = taxa;
-            Codigo = Enum.GetName<TipoDesconto>(codigo) ?? "";
-            QuantidadeDias = quantidadeDias;
-        }
+       
     }
 
 }

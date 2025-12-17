@@ -1,9 +1,10 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
-using Newtonsoft.Json;
+using OLS.LibCore.Validate;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -11,23 +12,29 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 {
-    public class SegundaViaBoletosSicoobRequestDto: RequestBase
+    public class ConsultarBoletoRequestDto : RequestBase
     {
+        [JsonPropertyName("clientId")]
+        public string ClienteId { get; set; } = string.Empty;
 
-        [property: JsonPropertyName("client_id")]
-        [Required]
-        public string ClienteId { get; set; } // passar no header
 
-        [property: JsonPropertyName("numeroCliente")]
+        [JsonPropertyName("body")]
+        public ConsultarBoletoSicoobRequestBody Body { get; set; }
+      
+    }
+
+    public class ConsultarBoletoSicoobRequestBody
+    {
+        [JsonPropertyName("numeroCliente")]
         [Required]
-        public string NumeroCliente { get; set; } 
+        public int NumeroCliente { get; set; }
 
         [property: JsonPropertyName("codigoModalidade")]
         [Required]
-        public ModalidadeBoletoSicoob CodigoModalidade { get; set; }
+        public int CodigoModalidade { get; set; }
 
-        [property: JsonPropertyName("nossoNumero")] 
-         public int? NossoNumero {  get; set; }
+        [property: JsonPropertyName("nossoNumero")]
+        public int? NossoNumero { get; set; }
 
         [property: JsonPropertyName("linhaDigitavel")]
         public string? LinhaDigitavel { get; set; }
@@ -35,24 +42,20 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
         [property: JsonPropertyName("codigoBarras")]
         public string? CodigoBarras { get; set; }
 
-        [property: JsonPropertyName("gerarPdf")]
-        public bool? GerarPdf { get; set; }
-
         [property: JsonPropertyName("numeroContratoCobranca")]
-        public int? NumeroContratoCobranca { get; set; }       
+        public int? NumeroContratoCobranca { get; set; }
+
 
         public bool IsValid()
         {
             OLS.LibCore.Validate.ValidationResult validationResult = new();
 
-            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob), CodigoModalidade))
-            {
+            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob),CodigoModalidade)) {
                 string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());
 
                 validationResult.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
-
+                
             }
-
 
             if (!validationResult.IsValid)
             {
@@ -63,6 +66,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
             return validationResult.IsValid;
         }
 
+        // ModalidadeBoletoSicoob
     }
-
 }

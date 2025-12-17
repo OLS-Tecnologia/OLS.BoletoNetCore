@@ -1,12 +1,6 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
 {
@@ -17,7 +11,8 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
         [Required]
         public string Nome { get; set; }
 
-        [JsonPropertyName("email")]       
+        [JsonPropertyName("email")]
+           [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Email { get; set; }
        
 
@@ -38,10 +33,9 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
         public string Endereco { get; set; }
        
 
-        [JsonPropertyName("bairro")]
-        public string? Bairro { get; set; }
+       
 
-        public PagadorBase(string nome, string cep, UfBrasil uf, string cidade, string endereco, string? email = null, string? bairro= null)
+        public PagadorBase(string nome, string cep, UfBrasil uf, string cidade, string endereco, string? email = null)
         {
             Nome = nome;
             Email = email;
@@ -49,7 +43,7 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
             Uf = Enum.GetName<UfBrasil>(uf) ?? "";
             Cidade = cidade;
             Endereco = endereco;
-            Bairro = bairro;
+          
         }
 
         public PagadorBase()

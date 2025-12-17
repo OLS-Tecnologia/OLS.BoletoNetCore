@@ -5,12 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Enums
-{  
-
-    public enum SituacaoBoletoSicoobEnum
+{
+    public enum CodigoNegativacaoBoletoSicoob
     {
-        ENTRADA_NORMAL = 1,
-        BAIXADO = 2,
-        LIQUIDADO = 3
+        NEGATIVAR_DIAS_UTEIS = 2,
+        NAO_NEGATIVAR = 3
     }
 }

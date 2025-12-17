@@ -13,21 +13,27 @@ using System.Text.Json;
 namespace BoletoNetCore.Cobrancas.Providers.Inter
 {
     public class InterProvider :
-        IProviderEmitirBoleto<EmitirBoletoInterRequestDto>,
-        IProviderBaixarBoleto<CancelamentoBoletoInterRequestDto>,
-        IProviderConsultaBoleto<ConsultarBoletoInterRequestDto>,
-        IProviderAlterarVencimento<AtualizarboletoInterRequestDto>,
-         IProviderAlterarValorBoleto<AtualizarboletoInterRequestDto>,
-        IProviderBoleto
+    IProviderEmitirBoleto<EmitirBoletoInterRequestDto>,
+    IProviderBaixarBoleto<CancelamentoBoletoInterRequestDto>,
+    IProviderConsultaBoleto<ConsultarBoletoInterRequestDto>,
+    IProviderAlterarVencimento<AtualizarboletoInterRequestDto>,
+     IProviderAlterarValorBoleto<AtualizarboletoInterRequestDto>,
+    // <TEmitir, TBaixar, TAlterarVenc, TAlterarValor, TConsultar>
+    IProviderBoleto//<EmitirBoletoInterRequestDto, CancelamentoBoletoInterRequestDto, AtualizarboletoInterRequestDto, AtualizarboletoInterRequestDto, ConsultarBoletoInterRequestDto>
     {
         public bool SuportaCnab { get; set; } = false;
         public bool SuportaApi { get; set; } = true;
 
-        public string ApiUrl { get; set; } = "https://cdpj-sandbox.partners.uatinter.co";
+        public string ApiUrl { get; set; } = string.Empty;
 
-        internal static TokenAcesso TokenRequest { get; set; } = new TokenAcesso(); // gerado com permissão de leitura
+        internal static TokenAcesso TokenRequest { get; set; } = new TokenAcesso();
+
         private static SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
-    
+
+        public InterProvider(string apiUrl)
+        {
+            ApiUrl = apiUrl;
+        }      
 
 
         public  async Task<ValidationResult>  EmitirBoleto(EmitirBoletoInterRequestDto request)
@@ -69,8 +75,10 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
         }
 
 
-        public async  Task<HttpStatusCode> BaixarBoleto(CancelamentoBoletoInterRequestDto req)
-        {          
+        public async  Task<ValidationResult> BaixarBoleto(CancelamentoBoletoInterRequestDto req)
+        {
+            ValidationResult _validateResult = new ValidationResult();
+
 
             try
             {              
@@ -103,18 +111,23 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
 
                     HttpResponseMessage response_detalhe = await client.PostAsync(uriCancelar, content);
 
+                    _validateResult.Object = response_detalhe.StatusCode;
+
                     if (!response_detalhe.IsSuccessStatusCode)
                     {
-                        return response_detalhe.StatusCode;
+                        _validateResult.AddMensagem("Erro ao dar baixa no boleto.");
+                       
+                        return _validateResult ;
                     }                     
 
-                    return HttpStatusCode.Accepted;
+                    return _validateResult;
                 }
 
             }
             catch (Exception ex)
-            {               
-                return HttpStatusCode.BadRequest;
+            {          
+                _validateResult.AddMensagem(ex.Message);
+                return _validateResult;
             }
            
 
@@ -259,6 +272,8 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                 }
                 else
                 {
+                    var teste = await response_detalhe.Content.ReadAsStringAsync();
+
                     throw new Exception("Status/Erro: " + response_detalhe.StatusCode + "/" + response_detalhe.ReasonPhrase);
                 }
                 

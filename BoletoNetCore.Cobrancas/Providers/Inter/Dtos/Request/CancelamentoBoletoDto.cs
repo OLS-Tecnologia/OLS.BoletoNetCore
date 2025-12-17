@@ -6,16 +6,7 @@ using System.Text.Json.Serialization;
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
     public class CancelamentoBoletoInterRequestDto : InterBaseRequestDto, RequestBase
-    {
-        public CancelamentoBoletoInterRequestDto( string codigoSolicitacao, CancelarBoetoBody requestDto,string clientId, string clientSecret, 
-            string arquivoCertificado, string arquivoChave, string? xContaCorente = null) : base(clientId, clientSecret, arquivoCertificado, arquivoChave)
-        {
-            CodigoSolicitacao = codigoSolicitacao;
-            RequestDto = requestDto;
-            XContaCorrente = xContaCorente;
-        }
-
-
+    {     
         /// <summary>
         ///     Conta corrente que será utilizada na operação, caso faça parte da lista de contas correntes da aplicação.
         ///     Enviar apenas números(incluindo o dígito), e não enviar zeros a esquerda.
@@ -24,12 +15,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [Required(ErrorMessage = "CodigoSolicitacao é obrigatório")]
         public string CodigoSolicitacao { get; set; }// path parameter
-
        
         [Required(ErrorMessage = "Necessário informar o corpo da requisição: RequestDto")]
         public CancelarBoetoBody RequestDto {  get; set; }
-
-
     }
 
     public class CancelarBoetoBody(string motivoCancelamento)

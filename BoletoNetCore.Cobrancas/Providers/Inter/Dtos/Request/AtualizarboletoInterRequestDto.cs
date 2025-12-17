@@ -1,8 +1,7 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json;
 using System.Text.Json.Serialization;
+
 
 namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 {
@@ -17,23 +16,18 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
 
         [Required(ErrorMessage = "Necessário informar o corpo da requisição: RequestDto")]
         public AtualizarBoletoBody   RequestDto {  get; set; }
-
-        public AtualizarboletoInterRequestDto(string codigoSolicitacao, string xContaCorrente, AtualizarBoletoBody requestDto, 
-            string clientId, string clientSecret, string arquivoCertificado, string arquivoChave) : base(clientId, clientSecret, arquivoCertificado, arquivoChave)
-        {
-            CodigoSolicitacao = codigoSolicitacao;
-            XContaCorrente = xContaCorrente;
-            RequestDto = requestDto;
-        }
+      
     }
 
     public class AtualizarBoletoBody
     {
 
         [JsonPropertyName("dataVencimento")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public DateOnly? DataVencimento { get; }
 
         [JsonPropertyName("valorNominal")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public double? ValorNominal { get; set; }
 
         public AtualizarBoletoBody(DateOnly dataVencimento, double valorNominal)

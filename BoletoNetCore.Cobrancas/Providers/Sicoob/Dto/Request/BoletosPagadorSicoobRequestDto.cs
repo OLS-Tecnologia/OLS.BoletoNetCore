@@ -1,31 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 {
-    public class BoletosPagadorSicoobRequestDto
-    {
-        [property: JsonPropertyName("client_id")]
-        [Required]
-        public string ClienteId { get; set; } // passar no header
+    public class BoletosPagadorSicoobRequestDto : RequestBase
+    {       
 
         [property: JsonPropertyName("numeroCpfCnpj")]
         [Required]
         public string NumeroCpfCnpj { get; set; } // path  /pagadores/{numeroCpf}/boletos
 
+
         [property: JsonPropertyName("numeroCliente")]
         [Required]
-        public string NumeroCliente { get; set; } // query
+        public int NumeroCliente { get; set; } // query      
+      
 
         [property: JsonPropertyName("codigoSituacao")]
 
-        public string? CodigoSituacao { get; set; } //query
+        public int? CodigoSituacao { get; set; } //query  SituacaoBoletoSicoobEnum
 
         [property: JsonPropertyName("dataInicio")]
 
@@ -35,6 +31,30 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
         public DateTime? DataFim { get; set; } // query
 
+        public bool IsValid()
+        {
 
+            OLS.LibCore.Validate.ValidationResult validationResult = new();
+
+            if (CodigoSituacao is not null)
+            {
+                if (!Enum.IsDefined(typeof(SituacaoBoletoSicoobEnum), CodigoSituacao))
+                {
+                    string options = string.Join(", ", Enum.GetValues<SituacaoBoletoSicoobEnum>());
+
+                    validationResult.AddMensagem($"Valor Inválido para codigo da situação do boleto. Valores aceitos: {options}");
+
+                }
+
+            }
+
+            if (!validationResult.IsValid)
+            {
+                throw new Exception(validationResult.Message);
+            }
+
+
+            return validationResult.IsValid;
+        }
     }
 }

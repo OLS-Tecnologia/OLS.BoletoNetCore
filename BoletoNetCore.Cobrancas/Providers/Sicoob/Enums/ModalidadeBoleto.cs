@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Enums
 {
-    public enum ModalidadeBoleto
+    public enum ModalidadeBoletoSicoob
     {
         SIMPLES_COM_REGISTRO = 1,
         CAUCIONADA = 3,

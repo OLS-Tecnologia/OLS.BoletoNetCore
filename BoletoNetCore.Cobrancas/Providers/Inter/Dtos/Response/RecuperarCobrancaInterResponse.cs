@@ -7,7 +7,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 {
     public class RecuperarCobrancaInterResponse : InterBaseResponseDto, ResponseBase
     {
-
         [property: JsonPropertyName("cobranca")]
         public Cobranca Cobranca { get; set; }
 
@@ -16,9 +15,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
 
         [property: JsonPropertyName("pix")] 
         public Pix? Pix { get; set; }
-
-
-
     };
 
     public record Boleto(
@@ -26,7 +22,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
         [property: JsonPropertyName("codigoBarras")] string CodigoBarras,
         [property: JsonPropertyName("linhaDigitavel")] string LinhaDigitavel
     );
-
     public record Cobranca(
         [property: JsonPropertyName("codigoSolicitacao")] string CodigoSolicitacao,
         [property: JsonPropertyName("seuNumero")] string SeuNumero,

@@ -19,6 +19,7 @@
 	  <summary>BoletoNetCore is a library developed for use in Brazil, given it has been programmed with Brazilian retail legislation and business rules for bank registered billing integration.</summary>
 	  <tags>boleto cnab banco pdf</tags>
 	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	  <Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>

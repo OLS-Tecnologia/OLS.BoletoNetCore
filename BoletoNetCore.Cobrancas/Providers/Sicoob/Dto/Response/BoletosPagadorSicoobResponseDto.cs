@@ -8,60 +8,63 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response
 {
-    public  record BoletosPagadorSicoobResponseDto
-    (
-        [property: JsonPropertyName("resultado")]
-        IReadOnlyList<PagadorBoletosResultado> Resultado
-    );
+    public class BoletosPagadorSicoobResponseDto
+    {
+        [JsonPropertyName("resultado")]
+        public  IReadOnlyList<PagadorBoletosResultado> Resultado { get; set; }
+    }
 
-    public record BeneficiarioFinalBoletos(
-      [property: JsonPropertyName("nome")] string Nome
-  );
+    public class BeneficiarioFinalBoletosSicoob
+    {
+        [JsonPropertyName("nome")] public string Nome {  get; set; }
+    }
 
-    public record PagadorBoletos(
-        [property: JsonPropertyName("numeroCpfCnpj")] string NumeroCpfCnpj,
-        [property: JsonPropertyName("nome")] string Nome
-    );
+    public class PagadorBoletos
+    {
+        [JsonPropertyName("numeroCpfCnpj")] public string NumeroCpfCnpj { get; set; }
+        [JsonPropertyName("nome")] public string Nome { get; set; }
+    }
 
-    public record PagadorBoletosResultado(
-        [property: JsonPropertyName("numeroCliente")] int NumeroCliente,
-        [property: JsonPropertyName("codigoModalidade")] int CodigoModalidade,
-        [property: JsonPropertyName("numeroContaCorrente")] int NumeroContaCorrente,
-        [property: JsonPropertyName("codigoEspecieDocumento")] string CodigoEspecieDocumento,
-        [property: JsonPropertyName("dataEmissao")] string DataEmissao,
-        [property: JsonPropertyName("nossoNumero")] int NossoNumero,
-        [property: JsonPropertyName("seuNumero")] string SeuNumero,
-        [property: JsonPropertyName("identificacaoBoletoEmpresa")] string IdentificacaoBoletoEmpresa,
-        [property: JsonPropertyName("codigoBarras")] string CodigoBarras,
-        [property: JsonPropertyName("linhaDigitavel")] string LinhaDigitavel,
-        [property: JsonPropertyName("valor")] double Valor,
-        [property: JsonPropertyName("dataVencimento")] string DataVencimento,
-        [property: JsonPropertyName("valorAbatimento")] int ValorAbatimento,
-        [property: JsonPropertyName("tipoDesconto")] int TipoDesconto,
-        [property: JsonPropertyName("dataPrimeiroDesconto")] string DataPrimeiroDesconto,
-        [property: JsonPropertyName("valorPrimeiroDesconto")] int ValorPrimeiroDesconto,
-        [property: JsonPropertyName("dataSegundoDesconto")] string DataSegundoDesconto,
-        [property: JsonPropertyName("valorSegundoDesconto")] int ValorSegundoDesconto,
-        [property: JsonPropertyName("dataTerceiroDesconto")] string DataTerceiroDesconto,
-        [property: JsonPropertyName("valorTerceiroDesconto")] int ValorTerceiroDesconto,
-        [property: JsonPropertyName("tipoMulta")] int TipoMulta,
-        [property: JsonPropertyName("dataMulta")] string DataMulta,
-        [property: JsonPropertyName("valorMulta")] int ValorMulta,
-        [property: JsonPropertyName("tipoJurosMora")] int TipoJurosMora,
-        [property: JsonPropertyName("dataJurosMora")] string DataJurosMora,
-        [property: JsonPropertyName("valorJurosMora")] int ValorJurosMora,
-        [property: JsonPropertyName("numeroParcela")] int NumeroParcela,
-        [property: JsonPropertyName("aceite")] bool Aceite,
-        [property: JsonPropertyName("codigoNegativacao")] int CodigoNegativacao,
-        [property: JsonPropertyName("codigoProtesto")] int CodigoProtesto,
-        [property: JsonPropertyName("quantidadeDiasFloat")] int QuantidadeDiasFloat,
-        [property: JsonPropertyName("pagador")] PagadorBoletos Pagador,
-        [property: JsonPropertyName("beneficiarioFinal")] BeneficiarioFinalBoletos BeneficiarioFinal,
-        [property: JsonPropertyName("mensagensInstrucao")] IReadOnlyList<string> MensagensInstrucao,
-        [property: JsonPropertyName("situacaoBoleto")] string SituacaoBoleto,
-        [property: JsonPropertyName("qrCode")] string QrCode,
-        [property: JsonPropertyName("numeroContratoCobranca")] int NumeroContratoCobranca
-    );
+    public class PagadorBoletosResultado
+    {
+        [JsonPropertyName("numeroCliente")]  public int NumeroCliente { get; set;}
+        [JsonPropertyName("codigoModalidade")]  public int CodigoModalidade { get; set;}
+        [JsonPropertyName("numeroContaCorrente")]  public int NumeroContaCorrente { get; set;}
+        [JsonPropertyName("codigoEspecieDocumento")]  public string CodigoEspecieDocumento { get; set;}
+        [JsonPropertyName("dataEmissao")]  public string DataEmissao { get; set;}
+        [JsonPropertyName("nossoNumero")]  public int NossoNumero { get; set;}
+        [JsonPropertyName("seuNumero")]  public string SeuNumero { get; set;}
+        [JsonPropertyName("identificacaoBoletoEmpresa")]  public string IdentificacaoBoletoEmpresa { get; set;}
+        [JsonPropertyName("codigoBarras")]  public string CodigoBarras { get; set;}
+        [JsonPropertyName("linhaDigitavel")]  public string LinhaDigitavel { get; set;}
+        [JsonPropertyName("valor")]  public double Valor { get; set;}
+        [JsonPropertyName("dataVencimento")]  public string DataVencimento { get; set;}
+        [JsonPropertyName("valorAbatimento")]  public int ValorAbatimento { get; set;}
+        [JsonPropertyName("tipoDesconto")]  public int TipoDesconto { get; set;}
+        [JsonPropertyName("dataPrimeiroDesconto")]  public string DataPrimeiroDesconto { get; set;}
+        [JsonPropertyName("valorPrimeiroDesconto")]  public int ValorPrimeiroDesconto { get; set;}
+        [JsonPropertyName("dataSegundoDesconto")]  public string DataSegundoDesconto { get; set;}
+        [JsonPropertyName("valorSegundoDesconto")]  public int ValorSegundoDesconto { get; set;}
+        [JsonPropertyName("dataTerceiroDesconto")]  public string DataTerceiroDesconto { get; set;}
+        [JsonPropertyName("valorTerceiroDesconto")]  public int ValorTerceiroDesconto { get; set;}
+        [JsonPropertyName("tipoMulta")]  public int TipoMulta { get; set;}
+        [JsonPropertyName("dataMulta")]  public string DataMulta { get; set;}
+        [JsonPropertyName("valorMulta")]  public int ValorMulta { get; set;}
+        [JsonPropertyName("tipoJurosMora")]  public int TipoJurosMora { get; set;}
+        [JsonPropertyName("dataJurosMora")]  public string DataJurosMora { get; set;}
+        [JsonPropertyName("valorJurosMora")]  public int ValorJurosMora { get; set;}
+        [JsonPropertyName("numeroParcela")]  public int NumeroParcela { get; set;}
+        [JsonPropertyName("aceite")]  public bool Aceite { get; set;}
+        [JsonPropertyName("codigoNegativacao")]  public int CodigoNegativacao { get; set;}
+        [JsonPropertyName("codigoProtesto")]  public int CodigoProtesto { get; set;}
+        [JsonPropertyName("quantidadeDiasFloat")]  public int QuantidadeDiasFloat { get; set;}
+        [JsonPropertyName("pagador")]  public PagadorBoletos Pagador { get; set;}
+        [JsonPropertyName("beneficiarioFinal")]  public BeneficiarioFinalBoletosSicoob BeneficiarioFinal { get; set;}
+        [JsonPropertyName("mensagensInstrucao")]  public IReadOnlyList<string> MensagensInstrucao { get; set;}
+        [JsonPropertyName("situacaoBoleto")]  public string SituacaoBoleto { get; set;}
+        [JsonPropertyName("qrCode")]  public string QrCode { get; set;}
+        [JsonPropertyName("numeroContratoCobranca")] public int NumeroContratoCobranc { get; set; }
+    }
 
   
 }

@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Enums
-{  
-
-    public enum SituacaoBoletoSicoobEnum
+{
+    public enum CodigoCadastrarPixOptionsSicoob
     {
-        ENTRADA_NORMAL = 1,
-        BAIXADO = 2,
-        LIQUIDADO = 3
+        PADRAO = 0,
+        COM_PIX = 1,
+        SEM_PIX = 2
     }
 }

@@ -76,26 +76,26 @@ namespace BoletoNetCore.Testes.ApiCobrancas
 
         }
 
-        //[Test]
-        //public async Task CancelarCobrancaSucesso()
-        //{
+        [Test]
+        public async Task CancelarCobrancaSucesso()
+        {
 
-        //    CancelarBoetoBody requestBody = new("Cancelamento teste");
+            CancelarBoetoBody requestBody = new("Cancelamento teste");
 
-        //    CancelamentoBoletoInterRequestDto request = new(
-        //        "e85ef5d3-3161-4c06-bc1e-de5237e99592",
-        //        requestBody,
-        //        ClientId,
-        //        ClientSecret,
-        //        ArquivoCertificado,
-        //        ArquivoChave                
-        //      );
-           
+            CancelamentoBoletoInterRequestDto request = new(
+                 "84fd78ac-55b8-454d-a4e1-d4357fc48f80",
+                requestBody,
+                ClientId,
+                ClientSecret,
+                ArquivoCertificado,
+                ArquivoChave
+              );
 
-        //    var result = await provider.BaixarBoleto(request);
-            
-        //    Assert.AreEqual(HttpStatusCode.Accepted, result);
-        //}
+
+            var result = await provider.BaixarBoleto(request);
+
+            Assert.AreEqual(HttpStatusCode.Accepted, result);
+        }
 
         [Test]
         public async Task AtualizarValorBoletoSucesso()
@@ -106,7 +106,7 @@ namespace BoletoNetCore.Testes.ApiCobrancas
          
 
             var request = new AtualizarboletoInterRequestDto(
-               "84fd78ac-55b8-454d-a4e1-d4357fc48f80",
+               "eb8179eb-9b61-498f-a2c5-ce968b8166e8",
                 "1234Conta",
                 body,
                 ClientId,

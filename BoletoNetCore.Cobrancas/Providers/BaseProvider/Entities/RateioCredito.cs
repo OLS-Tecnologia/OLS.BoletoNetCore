@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities
 {
-    internal class RateioCredito
+    public class RateioCredito
     {
 
         [JsonPropertyName("numeroBanco")]

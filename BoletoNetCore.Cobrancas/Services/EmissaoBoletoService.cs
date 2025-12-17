@@ -18,11 +18,11 @@ namespace BoletoNetCore.Cobrancas.Services
         {
             try
             {
-                var provider = ProviderFactory.GetProvider(Bancos.BancoInter);
+                var provider = ProviderFactory.GetProvider(Bancos.BancoInter, "");
 
                 EmitirBoletoInterRequestDto interRequest = null;
                 EmitirBoletoInterResponseDto interResponse = null;
-
+                
                 //var result = await provider.  .EmitirBoleto(interRequest);               
 
                 //if (result is not null)
