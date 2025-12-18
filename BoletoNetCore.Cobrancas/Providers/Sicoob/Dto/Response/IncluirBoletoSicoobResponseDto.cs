@@ -10,16 +10,10 @@ using System.Text.Json.Serialization;
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response
 {
     public class IncluirBoletoSicoobResponseDto : ResponseBase
-    {       
-        public ResponseEmissao responseEmissao { get; set; }
-    }
-
-    public class ResponseEmissao
     {
         [JsonPropertyName("resultado")]
         public ResultadoEmissaoBoletoSicoob Resultado { get; set; }
-
-    }
+    }  
 
 
     public class ResultadoEmissaoBoletoSicoob : ResultadoBaseBoletoSicoob

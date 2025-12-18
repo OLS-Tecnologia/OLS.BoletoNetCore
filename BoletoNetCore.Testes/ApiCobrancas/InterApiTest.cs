@@ -1,13 +1,14 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
-using BoletoNetCore.Cobrancas.Providers.Inter;
+﻿using BoletoNetCore.Cobrancas.Factory;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
 using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
+using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BoletoNetCore.Testes.ApiCobrancas
 {
@@ -17,8 +18,7 @@ namespace BoletoNetCore.Testes.ApiCobrancas
     [NonParallelizable]
 
     public class InterApiTest
-    {
-        private InterProvider provider = new InterProvider("https://cdpj-sandbox.partners.uatinter.co"); // TODO: Usar a factory aqui
+    {   
 
         public string ArquivoCertificado = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Certificado.crt";
         public string ArquivoChave = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Chave.key";
@@ -30,6 +30,9 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(1)]
         public async Task EmitirCobrancaSucesso()
         {
+
+            var provider = ProviderFactory.EmitirBoleto<EmitirBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+
             var pagador = new PagadorInter()
             {
                 CpfCnpj =  "63037800674", 
@@ -55,33 +58,40 @@ namespace BoletoNetCore.Testes.ApiCobrancas
               ValorNominal=  2.5, 
               DataVencimento =   new DateOnly(2026, 09, 07), 
               NumDiasAgenda =  60, 
-              Pagador=   pagador
+              Pagador=   pagador, 
             };
          
 
             var interRequest = new EmitirBoletoInterRequestDto()
             {
                 RequestDto = body,
-                ClientSecret = "", 
+                ClientSecret = ClientSecret, 
                 ArquivoCertificado = ArquivoCertificado,
                 ArquivoChave = ArquivoChave,
                 ClientId = ClientId,
                 XContaCorrente = "1234"
+               
                 
-            };               
+            };    
+            var listRquest = new List<EmitirBoletoInterRequestDto>() { interRequest };
               
 
-            var result = await provider.EmitirBoleto(interRequest);
+            var result = await provider.EmitirBoleto(listRquest);
 
-            Assert.IsInstanceOf(typeof(RecuperarCobrancaInterResponse), result.Object);
+            Assert.AreEqual(result.IsValid, true);
 
-            CodigoCobranca = ((RecuperarCobrancaInterResponse)result.Object).Cobranca.CodigoSolicitacao;
+            Assert.IsInstanceOf(typeof(RecuperarCobrancaInterResponse), ((List<RecuperarCobrancaInterResponse>)result.Object).FirstOrDefault());
+
+            CodigoCobranca = ((List<RecuperarCobrancaInterResponse>)result.Object).FirstOrDefault()?.Cobranca.CodigoSolicitacao;
 
         }
 
         [Test, Order(2)]
         public async Task BuscarCobrancaSucesso()
         {
+
+            var provider = ProviderFactory.ConsultarBoleto<ConsultarBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
             var ConsultarBoletoRequest = new ConsultarBoletoInterRequestDto()
             {
@@ -104,6 +114,8 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(3)]
         public async Task AtualizarValorBoletoSucesso()
         {
+            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+
             double novoValor = 5.5;
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
 
@@ -131,6 +143,9 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(4)]
         public async Task AtualizarDataVencimentoBoletoSucesso()
         {
+
+            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
             DateOnly dataVencimento = DateOnly.FromDateTime(new DateTime(2026,12,30));
 
@@ -157,6 +172,7 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(5)]
         public async Task CancelarCobrancaSucesso()
         {
+            var provider = ProviderFactory.BaixarBoleto<CancelamentoBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
 
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
 

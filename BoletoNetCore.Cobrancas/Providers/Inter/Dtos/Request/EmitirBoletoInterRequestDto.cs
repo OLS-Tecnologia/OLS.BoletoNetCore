@@ -2,8 +2,6 @@
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
-using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -60,7 +58,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
                 {
                     foreach (string msg in RequestDto.Mensagem)
                     {
-                        if (msg.Length > 78)
+                        if (msg?.Length > 78)
                         {
                             ListErrosValidacao.AddMensagem("As mensagens de instrução devem ter no máximo 78 caracteres.");
                         }
@@ -176,23 +174,29 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         public PagadorInter Pagador { get; set; }
 
         [JsonPropertyName("desconto")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Desconto? Desconto { get; set; }
 
         [JsonPropertyName("multa")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Multa? Multa { get; set; }
 
 
         [JsonPropertyName("mora")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Mora? Mora { get; set; }
 
         [JsonPropertyName("mensagem")]
-        public string[]? Mensagem { get; set; } = new string[5];
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string[]? Mensagem { get; set; } 
 
 
         [JsonPropertyName("beneficiarioFinal")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public BeneficiarioFinal? BeneficiarioFinal { get; set; }
 
         [JsonPropertyName("formasRecebimento")]
+            [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string>? FormasRecebimento { get; set; }  //  [ "BOLETO", "PIX" ]
             
            

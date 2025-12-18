@@ -20,7 +20,28 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
         [JsonPropertyName("body")]
         public ConsultarBoletoSicoobRequestBody Body { get; set; }
-      
+
+        public bool IsValid()
+        {
+            OLS.LibCore.Validate.ValidationResult validationResult = new();
+
+            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob), Body.CodigoModalidade))
+            {
+                string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());
+
+                validationResult.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
+
+            }
+
+            if (!validationResult.IsValid)
+            {
+                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
+                throw new Exception(validationResult.Message);
+            }
+
+            return validationResult.IsValid;
+        }
+
     }
 
     public class ConsultarBoletoSicoobRequestBody
@@ -46,26 +67,6 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
         public int? NumeroContratoCobranca { get; set; }
 
 
-        public bool IsValid()
-        {
-            OLS.LibCore.Validate.ValidationResult validationResult = new();
-
-            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob),CodigoModalidade)) {
-                string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());
-
-                validationResult.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
-                
-            }
-
-            if (!validationResult.IsValid)
-            {
-                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
-                throw new Exception(validationResult.Message);
-            }
-
-            return validationResult.IsValid;
-        }
-
-        // ModalidadeBoletoSicoob
+      
     }
 }

@@ -19,6 +19,187 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
         [JsonPropertyName("boleto")]
         [Required]
         public IncluirBoletoSicoobRequestBody Boleto { get; set; }
+
+        public bool IsValid()
+        {
+
+            OLS.LibCore.Validate.ValidationResult listErros = new();
+
+            DateOnly DataAtual = DateOnly.FromDateTime(DateTime.Today);
+
+
+            if (Boleto.DataVencimento < DataAtual)
+            {
+                listErros.AddMensagem("Data de vencimento da cobranca não pode ser menor que a data atual.");
+            }
+
+
+            if (!Enum.IsDefined(typeof(TipoMultaSicoob), Boleto.TipoMulta))
+            {
+                string options = string.Join(", ", Enum.GetValues<TipoMultaSicoob>());
+
+                listErros.AddMensagem($"Valor Inválido para tipo de multa do boleto. Valores aceitos: {options}");
+
+            }
+
+            if (!Enum.IsDefined(typeof(TipoJurosMoraSicoob), Boleto.TipoJurosMora))
+            {
+                string options = string.Join(", ", Enum.GetValues<TipoJurosMoraSicoob>());
+
+                listErros.AddMensagem($"Valor Inválido para TipoJurosMora do boleto. Valores aceitos: {options}");
+
+            }
+            if (!Enum.IsDefined(typeof(TipoDesconto), Boleto.TipoDesconto))
+            {
+                string options = string.Join(", ", Enum.GetValues<TipoDesconto>());
+
+                listErros.AddMensagem($"Valor Inválido para Tipo desconto do boleto. Valores aceitos: {options}");
+
+            }
+
+
+
+
+            if (Boleto.CodigoNegativacao is not null & Boleto.CodigoNegativacao == (int)CodigoNegativacaoBoletoSicoob.NEGATIVAR_DIAS_UTEIS)
+            {
+                if (Boleto.NumeroDiasNegativacao is null)
+                {
+                    listErros.AddMensagem("Necessário informar o número de  dias para negativação do boleto. ");
+
+                }
+
+                if (!Enum.IsDefined(typeof(CodigoNegativacaoBoletoSicoob), Boleto.CodigoNegativacao))
+                {
+                    string options = string.Join(", ", Enum.GetValues<CodigoNegativacaoBoletoSicoob>());
+
+                    listErros.AddMensagem($"Valor Inválido para codigo de negativação do boleto. Valores aceitos: {options}");
+
+                }
+
+            }
+
+            if (Boleto.CodigoProtesto is not null & Boleto.CodigoProtesto == (int)TipoProtestoSicoob.PROTESTAR_DIAS_CORRIDOS)
+            {
+                if (Boleto.NumeroDiasProtesto is null)
+                {
+                    listErros.AddMensagem("Necessário informar o número de dias para protesto do boleto. ");
+
+                }
+
+                if (!Enum.IsDefined(typeof(TipoProtestoSicoob), Boleto.CodigoProtesto))
+                {
+                    string options = string.Join(", ", Enum.GetValues<TipoProtestoSicoob>());
+
+                    listErros.AddMensagem($"Valor Inválido para tipo Protesto do boleto. Valores aceitos: {options}");
+
+                }
+            }
+
+
+            // Valor da multa. Deve ser preenchido caso o campo dataMulta seja preenchido.
+            if (Boleto.DataMulta is not null)
+            {
+                if (Boleto.ValorMulta is null)
+                {
+                    listErros.AddMensagem("Campo data multa foi preenchido, o valor da multa deve ser informado.");
+                }
+
+            }
+
+            // Data Juros mora - Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
+            if (Boleto.DataJurosMora is not null)
+            {
+                if (Boleto.DataJurosMora < Boleto.DataVencimento)
+                {
+                    listErros.AddMensagem("Campo DataJurosMora deve ser maior que a data de vencimento do boleto.");
+
+                }
+
+                if (Boleto.DataLimitePagamento is not null)
+                {
+                    if (Boleto.DataJurosMora > Boleto.DataLimitePagamento)
+                    {
+                        listErros.AddMensagem("Campo DataJurosMora não pode ser maior que a data limite de pagamento do boleto.");
+                    }
+                }
+                // validar valor juros mora               
+                if (Boleto.ValorJurosMora is null)
+                {
+                    listErros.AddMensagem("Campo DataJurosMora foi preenchido, obrigatório informar o valor juros mora");
+
+                }
+
+            }
+
+
+            if (Boleto.DataPrimeiroDesconto is not null)
+            {
+                if (Boleto.ValorPrimeiroDesconto is null)
+                {
+                    listErros.AddMensagem("Obrigatório informar valor do primeiro desconto.");
+
+                }
+            }
+
+            if (Boleto.DataSegundoDesconto is not null)
+            {
+                if (Boleto.ValorSegundoDesconto is null)
+                {
+                    listErros.AddMensagem("Obrigatório informar valor do segundo desconto.");
+
+                }
+            }
+
+            if (Boleto.DataTerceiroDesconto is not null)
+            {
+                if (Boleto.ValorTerceiroDesconto is null)
+                {
+                    listErros.AddMensagem("Obrigatório informar valor do terceiro desconto.");
+
+                }
+            }
+
+            if (Boleto.MensagensInstrucao is not null)
+            {
+
+                if (Boleto.MensagensInstrucao.Count > 5)
+                {
+
+                    listErros.AddMensagem("São permitidas apenas 5 mensagens de instrução.");
+
+                }
+                else
+                {
+                    foreach (string msg in Boleto.MensagensInstrucao)
+                    {
+                        if (msg.Length > 40)
+                        {
+                            listErros.AddMensagem("As mensagens de instrução devem ter no máximo 40 caracteres.");
+                        }
+                    }
+
+                }
+
+            }
+
+            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob), Boleto.CodigoModalidade))
+            {
+                string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());
+
+                listErros.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
+
+            }
+
+
+
+            if (!listErros.IsValid)
+            {
+                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
+                throw new Exception(listErros.Message);
+            }
+
+            return listErros.IsValid;
+        }
     }  
 
 
@@ -187,189 +368,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
         [JsonPropertyName("numeroContratoCobranca")]
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public int? NumeroContratoCobranca { get; set; }          
+        public int? NumeroContratoCobranca { get; set; }        
 
-        public bool IsValid()
-        {
-
-            OLS.LibCore.Validate.ValidationResult listErros = new();
-
-            DateOnly DataAtual = DateOnly.FromDateTime(DateTime.Today);
-
-
-            if (DataVencimento < DataAtual)
-            {
-                listErros.AddMensagem("Data de vencimento da cobranca não pode ser menor que a data atual.");
-            }            
-          
-
-            if (!Enum.IsDefined(typeof(TipoMultaSicoob), TipoMulta))
-            {
-                string options = string.Join(", ", Enum.GetValues<TipoMultaSicoob>());
-
-                listErros.AddMensagem($"Valor Inválido para tipo de multa do boleto. Valores aceitos: {options}");
-
-            }
-
-            if (!Enum.IsDefined(typeof(TipoJurosMoraSicoob), TipoJurosMora))
-            {
-                string options = string.Join(", ", Enum.GetValues<TipoJurosMoraSicoob>());
-
-                listErros.AddMensagem($"Valor Inválido para TipoJurosMora do boleto. Valores aceitos: {options}");
-
-            }
-            if (!Enum.IsDefined(typeof(TipoDesconto), TipoDesconto))
-            {
-                string options = string.Join(", ", Enum.GetValues<TipoDesconto>());
-
-                listErros.AddMensagem($"Valor Inválido para Tipo desconto do boleto. Valores aceitos: {options}");
-
-            }
-
-
-
-
-            if (CodigoNegativacao is not null & CodigoNegativacao == (int)CodigoNegativacaoBoletoSicoob.NEGATIVAR_DIAS_UTEIS)
-            {
-                if (NumeroDiasNegativacao is null)
-                {
-                    listErros.AddMensagem("Necessário informar o número de  dias para negativação do boleto. ");
-
-                }
-
-                if (!Enum.IsDefined(typeof(CodigoNegativacaoBoletoSicoob), CodigoNegativacao))
-                {
-                    string options = string.Join(", ", Enum.GetValues<CodigoNegativacaoBoletoSicoob>());
-
-                    listErros.AddMensagem($"Valor Inválido para codigo de negativação do boleto. Valores aceitos: {options}");
-
-                }
-
-            }
-
-            if (CodigoProtesto is not null & CodigoProtesto == (int)TipoProtestoSicoob.PROTESTAR_DIAS_CORRIDOS)
-            {
-                if (NumeroDiasProtesto is null)
-                {
-                    listErros.AddMensagem("Necessário informar o número de dias para protesto do boleto. ");
-
-                }
-
-                if (!Enum.IsDefined(typeof(TipoProtestoSicoob), CodigoProtesto))
-                {
-                    string options = string.Join(", ", Enum.GetValues<TipoProtestoSicoob>());
-
-                    listErros.AddMensagem($"Valor Inválido para tipo Protesto do boleto. Valores aceitos: {options}");
-
-                }
-            }
-
-
-            // Valor da multa. Deve ser preenchido caso o campo dataMulta seja preenchido.
-            if (DataMulta is not null)
-            {
-                if (ValorMulta is null)
-                {
-                    listErros.AddMensagem("Campo data multa foi preenchido, o valor da multa deve ser informado.");
-                }
-
-            }
-
-            // Data Juros mora - Deve ser maior que a data de vencimento do boleto e menor ou igual que data limite de pagamento.
-            if (DataJurosMora is not null)
-            {
-                if (DataJurosMora < DataVencimento)
-                {
-                    listErros.AddMensagem("Campo DataJurosMora deve ser maior que a data de vencimento do boleto.");
-
-                }
-
-                if (DataLimitePagamento is not null)
-                {
-                    if (DataJurosMora > DataLimitePagamento)
-                    {
-                        listErros.AddMensagem("Campo DataJurosMora não pode ser maior que a data limite de pagamento do boleto.");
-                    }
-                }
-                // validar valor juros mora
-
-                if (ValorJurosMora is null)
-                {
-                    listErros.AddMensagem("Campo DataJurosMora foi preenchido, obrigatório informar o valor juros mora");
-
-                }
-
-            }
-
-
-            if (DataPrimeiroDesconto is not null)
-            {
-                if (ValorPrimeiroDesconto is null)
-                {
-                    listErros.AddMensagem("Obrigatório informar valor do primeiro desconto.");
-
-                }
-            }
-
-            if (DataSegundoDesconto is not null)
-            {
-                if (ValorSegundoDesconto is null)
-                {
-                    listErros.AddMensagem("Obrigatório informar valor do segundo desconto.");
-
-                }
-            }
-
-            if (DataTerceiroDesconto is not null)
-            {
-                if (ValorTerceiroDesconto is null)
-                {
-                    listErros.AddMensagem("Obrigatório informar valor do terceiro desconto.");
-
-                }
-            }
-
-            if (MensagensInstrucao is not null)
-            {
-
-                if (MensagensInstrucao.Count > 5)
-                {
-
-                    listErros.AddMensagem("São permitidas apenas 5 mensagens de instrução.");
-
-                }
-                else
-                {
-                    foreach (string msg in MensagensInstrucao)
-                    {
-                        if (msg.Length > 40)
-                        {
-                            listErros.AddMensagem("As mensagens de instrução devem ter no máximo 40 caracteres.");
-                        }
-                    }
-
-                }
-
-            }          
-
-            if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob), CodigoModalidade))
-            {
-                string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());
-
-                listErros.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
-
-            }
-          
-
-
-            if (!listErros.IsValid)
-            {
-                Console.WriteLine(" Erros na validação do IncluirBoletoSicoobRequestDto");
-                throw new Exception(listErros.Message);
-            }
-
-            return listErros.IsValid;
-        }
+       
 
     }
 

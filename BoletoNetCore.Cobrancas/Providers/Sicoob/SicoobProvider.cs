@@ -4,19 +4,17 @@ using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
 using OLS.LibCore.Validate;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 {
-    public class SicoobProvider : IProviderBoleto,
+    public class SicoobProvider : 
         IProviderEmitirBoleto<EmitirBoletoSicoobResquetDto>,
         IProviderBaixarBoleto<BaixarBoletoSicoobRequestDto>,
         IProviderConsultaBoleto<ConsultarBoletoRequestDto>,
-        IProviderAlterarVencimento<EditarBoletoSicoobRequestDto>,
-        IProviderAlterarValorBoleto<EditarBoletoSicoobRequestDto>
+        IProviderATualizarBoleto<EditarBoletoSicoobRequestDto>        
     {
 
         public bool SuportaCnab { get; set; } = false;
@@ -28,74 +26,81 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
         private static SemaphoreSlim _lock = new SemaphoreSlim(1, 1);
 
+        private ValidationResult _validationResult;
+
         public SicoobProvider(string apiUrl, string? token= null)
         {
             ApiUrl = apiUrl;
             Token = token;
+
+            _validationResult = new ValidationResult();
         }
 
-        public async Task<ValidationResult> EmitirBoleto(EmitirBoletoSicoobResquetDto request)
+        public async Task<ValidationResult> EmitirBoleto(List<EmitirBoletoSicoobResquetDto> requests)
         {
 
-            ValidationResult _validateResult = new();
+            _validationResult.Object = new List<IncluirBoletoSicoobResponseDto>();
+          
+           
+            if(requests.Count == 0)
+            {                    
+                _validationResult.AddMensagem("Nenhuma requisição informada", tipo: ValidationMessageType.Aviso);
+                return _validationResult;           
 
-            try
-            {
-                string uriEmitir = ApiUrl + "/boletos";
+            }
 
-                string ArquivoCertificado = @"C:\CERTS\private.PEM";
-                string ArquivoChave= @"C:\CERTS\public.PEM";
-
-                //TODO: Verificar a geração do certificado
-               // var cert = obterCert(ArquivoCertificado, ArquivoChave) ;
-
-                //var clientHandlerOauth = new HttpClientHandler();
-                //clientHandlerOauth.ClientCertificateOptions = ClientCertificateOption.Manual;
-                //clientHandlerOauth.ClientCertificates.Add(cert);
-
-
-               //  await ObterToken(request.ClienteId);               
-
-                using (var client = new HttpClient())
+            foreach (var request in requests)
+            {               
+                try
                 {
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{Token}");
-                    client.DefaultRequestHeaders.Add("client_id", $"{request.ClienteId}");
+                    request.IsValid();
 
-                    var payload = JsonSerializer.Serialize(request.Boleto);
+                    await ObterToken(request.ClienteId);
 
-                    var content = new StringContent(payload, Encoding.UTF8, "application/json");
+                    string uriEmitir = ApiUrl + "/boletos";
+                      
 
-                    HttpResponseMessage response_detalhe = await client.PostAsync(uriEmitir, content);
-                     string resultado = "";
-
-                    if (response_detalhe.IsSuccessStatusCode)
+                    using (var client = new HttpClient())
                     {
-                        resultado = await response_detalhe.Content.ReadAsStringAsync();
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Add("Authorization", "Bearer " + $"{Token}");
+                        client.DefaultRequestHeaders.Add("client_id", $"{request.ClienteId}");
+
+                        var payload = JsonSerializer.Serialize(request.Boleto);
+
+                        var content = new StringContent(payload, Encoding.UTF8, "application/json");
+
+                        HttpResponseMessage resposta = await client.PostAsync(uriEmitir, content);                       
+
+                        if (!resposta.IsSuccessStatusCode)                           
+                        {
+                            string respostaDetalhes = await resposta.Content.ReadAsStringAsync();
+                            _validationResult.AddMensagem($"Erro ao gerar o boleto: {resposta.StatusCode} - {respostaDetalhes}", request.Boleto.SeuNumero);
+                            return _validationResult;
+                        }
+
+
+                        var respostaData = await  resposta.Content.ReadFromJsonAsync<IncluirBoletoSicoobResponseDto>() ;                       
+
+                        ((List<IncluirBoletoSicoobResponseDto>)_validationResult.Object).Add(respostaData);
+
+                        _validationResult.AddMensagem("Boleto gerado com sucesso", request.Boleto.SeuNumero, tipo: ValidationMessageType.Sucesso);
+
+                        if (requests.Count > 1)
+                            await Task.Delay(TimeSpan.FromMilliseconds(500));
                     }
-                    else
-                    {
-                        var teste = await response_detalhe.Content.ReadAsStringAsync();
-                        _validateResult.AddMensagem($"Status/Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
-                        return _validateResult;
-                    }                   
 
-                    _validateResult.Object = JsonSerializer.Deserialize<EmitirBoletoInterResponseDto>(resultado); 
-
-                    return _validateResult;
+                }catch(Exception ex)
+                {
+                    _validationResult.AddMensagem($"Erro na validação da requisição: {ex.Message}", request.Boleto.SeuNumero);   
+                    return _validationResult;
                 }
-
-               
-            }
-            catch (Exception ex)
-            {
-                _validateResult.AddMensagem(ex.Message);
-
-                return _validateResult;
-                
             }
 
+            return _validationResult;
+          
         }
+
         public async Task<ValidationResult> AlterarDataDeVencimentoBoleto(EditarBoletoSicoobRequestDto request)
         {
 
@@ -103,13 +108,13 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
             try
             {
-                
+
+                request.IsValid();
+
                 string uriEmitir = ApiUrl + $"/boletos/{request.NossoNumero}";
+             
 
-                //TODO: Verificar a geração do certificado
-            //    var cert = obterCert("caminho chave");// new X509Certificate2(uriEmitir);
-
-             //   await ObterToken(request.ClientId, cert);
+                await ObterToken(request.ClientId);
 
                 using (var client = new HttpClient())
                 {
@@ -122,26 +127,17 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
                     var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response_detalhe = await client.PatchAsync(uriEmitir, content);
-                    HttpStatusCode resultado;
-
-                    if (response_detalhe.IsSuccessStatusCode)
+                  
+                    if (!response_detalhe.IsSuccessStatusCode)
                     {
-                        resultado = response_detalhe.StatusCode;
-                    }
-                    else
-                    {
-                        _validateResult.AddMensagem($"Status/Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
+                        _validateResult.AddMensagem($"Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
                         return _validateResult;
-                    }                 
+                    }
 
-                    _validateResult.Object = resultado;
+                    _validateResult.Object = response_detalhe.StatusCode;                   
 
                     return _validateResult;
-
                 }
-
-
-
 
             }
             catch (Exception ex)
@@ -160,12 +156,12 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
             try
             {
-                string uriEmitir = ApiUrl + $"/boletos/{request.NossoNumero}";
 
-                //TODO: Verificar a geração do certificado
-                //var cert = obterCert("caminho chave");// new X509Certificate2(uriEmitir);
+                request.IsValid();
 
-                //await ObterToken(request.ClientId, cert);
+                string uriEmitir = ApiUrl + $"/boletos/{request.NossoNumero}";                
+
+                await ObterToken(request.ClientId);
 
                 using (var client = new HttpClient())
                 {
@@ -177,25 +173,19 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
                     var content = new StringContent(payload, Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response_detalhe = await client.PatchAsync(uriEmitir, content);
-                    HttpStatusCode resultado;
+                    HttpResponseMessage response_detalhe = await client.PatchAsync(uriEmitir, content);          
 
-                    if (response_detalhe.IsSuccessStatusCode)
-                    {
-                        resultado =  response_detalhe.StatusCode;
-                    }
-                    else
+                    if (!response_detalhe.IsSuccessStatusCode)                   
                     {                       
-                        _validateResult.AddMensagem($"Status/Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
+                        _validateResult.AddMensagem($"Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
                         return _validateResult;
                     }                 
 
-                    _validateResult.Object = resultado;
+                    _validateResult.Object = response_detalhe.StatusCode;
 
                     return _validateResult;
 
                 }
-
 
 
             }
@@ -213,13 +203,12 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
             ValidationResult _validateResult = new ValidationResult();
             try
             {
-               
-                string uriEmitir = ApiUrl + $"/boletos/{request.NossoNumero}/baixar";
+                request.IsValid();
 
-                //TODO: Verificar a geração do certificado
-                //var cert = obterCert("caminho chave");// new X509Certificate2(uriEmitir);
 
-                //await ObterToken(request.ClientId, cert);
+                string uriEmitir = ApiUrl + $"/boletos/{request.NossoNumero}/baixar";               
+
+                 await ObterToken(request.ClientId);
 
                 using (var client = new HttpClient())
                 {
@@ -264,6 +253,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
 
             try
             {
+
+                request.IsValid();
+
                 await ObterToken(request.ClienteId);
 
                 using (var client = new HttpClient())
@@ -275,15 +267,12 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
                     string uriEmitir = ApiUrl + $"/boletos?numeroCliente={request.Body.NumeroCliente}&codigoModalidade={request.Body.CodigoModalidade}&nossoNumero={request.Body.NossoNumero}&linhaDigitavel={request.Body.LinhaDigitavel}&codigoBarras={request.Body.CodigoBarras}&numeroContratoCobranca={request.Body.NumeroContratoCobranca}";
 
                     HttpResponseMessage response_detalhe = await client.GetAsync(uriEmitir);
-                    string resultado = "";
 
-                    if (response_detalhe.IsSuccessStatusCode)
+                    string resultado = await response_detalhe.Content.ReadAsStringAsync();
+
+                    if (!response_detalhe.IsSuccessStatusCode)                  
                     {
-                        resultado = await response_detalhe.Content.ReadAsStringAsync();
-                    }
-                    else
-                    {
-                        _validateResult.AddMensagem($"Status/Erro: {response_detalhe.StatusCode} - {response_detalhe.ReasonPhrase}");
+                        _validateResult.AddMensagem($"Erro: {response_detalhe.StatusCode}: {resultado}");
                         return _validateResult;
                     }
 
@@ -327,13 +316,15 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob
                 {
                     var response = await client.PostAsync(ApiUrlGerarToken, new FormUrlEncodedContent(data));
 
+                    string response_detalhes = await response.Content.ReadAsStringAsync();
+
                     if (!response.IsSuccessStatusCode)
                     {
-                        throw new Exception($"Erro na obtenção do token: {response.StatusCode}: {response.ReasonPhrase}");
+                        throw new Exception($"Erro na obtenção do token: {response.StatusCode}: {response_detalhes}");
                     }
 
-                    string jsonStr = await response.Content.ReadAsStringAsync();
-                    Token = jsonStr;                   
+                  
+                    Token = response_detalhes;                   
                 }             
 
             }

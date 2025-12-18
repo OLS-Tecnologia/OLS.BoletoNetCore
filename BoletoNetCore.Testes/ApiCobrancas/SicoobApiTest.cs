@@ -1,6 +1,6 @@
-﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
+﻿using BoletoNetCore.Cobrancas.Factory;
+using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.Sicoob;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Base;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
@@ -10,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BoletoNetCore.Testes.ApiCobrancas
@@ -20,15 +18,15 @@ namespace BoletoNetCore.Testes.ApiCobrancas
     [TestFixture]
     [Category("Testes Cobranca")]
     public class SicoobApiTest
-    {
-
-        private SicoobProvider provider = new SicoobProvider("https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
+    {    
                     
         private string ClientId = "9b5e603e428cc477a2841e2683c92d21";
 
         [Test]
         public async Task EmitirCobrancaSucesso()
         {
+
+            var provider = ProviderFactory.EmitirBoleto<EmitirBoletoSicoobResquetDto>(Bancos.Sicoob ,"https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
 
             var pagador = new PagadorSicoob()
             {
@@ -50,24 +48,23 @@ namespace BoletoNetCore.Testes.ApiCobrancas
 
             var boletoBody = new IncluirBoletoSicoobRequestBody()
             {
-                /*
-                 25546454,
-                ModalidadeBoletoSicoob.SIMPLES_COM_REGISTRO,
-                456789, 
-                CodigoEspecieDocumentosEnum.DM,
-                DateOnly.FromDateTime(DateTime.Today),
-                "01234567890123456789", 
-                2,
-                2, 
-                560.00, 
-                new DateOnly(2025, 12,30),
-                TipoDesconto.SEMDESCONTO, 
-                TipoMultaSicoob.ISENTO,
-                TipoJurosMoraSicoob.ISENTO,
-                1, pagador,
-                beneficiario
-                 
-                 */
+                SeuNumero = "3243546",
+                CodigoModalidade = 1,
+                BeneficiarioFinal = beneficiario,
+                Pagador = pagador,
+                TipoDesconto = (int)TipoDesconto.SEMDESCONTO,
+                TipoJurosMora = (int)TipoJurosMoraSicoob.ISENTO,
+                TipoMulta = (int)TipoMultaSicoob.ISENTO,
+                CodigoEspecieDocumento = Enum.GetName(CodigoEspecieDocumentosEnum.DM),
+                DataEmissao = DateOnly.FromDateTime(DateTime.Today),
+                DataVencimento = new DateOnly(2025, 12, 30),
+                NumeroCliente = 25546454,
+                NumeroParcela = 1,
+                IdentificacaoDistribuicaoBoleto = 1,
+                IdentificacaoEmissaoBoleto = 1,
+                Valor = 500,
+                NumeroContaCorrente = 12344
+                
             };
 
 
@@ -76,18 +73,20 @@ namespace BoletoNetCore.Testes.ApiCobrancas
                 ClienteId = ClientId,
                 Boleto = boletoBody
             };
+            var listRequest = new List<EmitirBoletoSicoobResquetDto>() { emitirCobrancaRequest };
 
-            var response = await provider.EmitirBoleto(emitirCobrancaRequest);
+            var response = await provider.EmitirBoleto(listRequest);
 
             Assert.AreEqual(response.IsValid, true);
 
-            Assert.IsInstanceOf(typeof(EmitirBoletoInterResponseDto),  response.Object);
+            Assert.IsInstanceOf(typeof(IncluirBoletoSicoobResponseDto), ((List<IncluirBoletoSicoobResponseDto>)response.Object).FirstOrDefault());
 
         }
 
         [Test]
         public async Task BuscarCobrancaSucesso()
         {
+            var provider = ProviderFactory.ConsultarBoleto<ConsultarBoletoRequestDto>(Bancos.Sicoob, "https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
             var body = new ConsultarBoletoSicoobRequestBody()
             {
                 CodigoModalidade = 1, //  ModalidadeBoletoSicoob.SIMPLES_COM_REGISTRO
@@ -111,6 +110,8 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test]
         public async Task CancelarCobrancaSucesso()
         {
+            var provider = ProviderFactory.BaixarBoleto<BaixarBoletoSicoobRequestDto>(Bancos.Sicoob, "https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
+
             var boleto = new BaixarBoletoRequestBody()
             {
                 NumeroCliente= 12,
@@ -136,6 +137,8 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test]
         public async Task AtualizarValorBoletoSucesso()
         {
+            var provider = ProviderFactory.AtualizarBoleto<EditarBoletoSicoobRequestDto>(Bancos.Sicoob, "https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
+
             var novoValor = new AlterarValorNominalBody()
             {
                 Valor = 600
@@ -165,6 +168,8 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test]
         public async Task AtualizarDataVencimentoBoletoSucesso()
         {
+            var provider = ProviderFactory.AtualizarBoleto<EditarBoletoSicoobRequestDto>(Bancos.Sicoob, "https://sandbox.sicoob.com.br/sicoob/sandbox/cobranca-bancaria/v3", "1301865f-c6bc-38f3-9f49-666dbcfc59c3");
+
             var novoVencimento = new ProrrogacaoVencimentoSicoobBody()
             {
                 DataVencimento = DateOnly.FromDateTime(new DateTime(2026, 12, 29))

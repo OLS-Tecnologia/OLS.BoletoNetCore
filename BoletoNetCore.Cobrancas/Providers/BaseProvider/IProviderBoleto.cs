@@ -6,16 +6,12 @@ using System.Net;
 
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
-{  
-    public interface IProviderBoleto
-    {
-
-    }
+{     
 
     public interface IProviderEmitirBoleto<TReq>
     where TReq : RequestBase
     {
-        Task<ValidationResult> EmitirBoleto(TReq request);
+        Task<ValidationResult> EmitirBoleto(List<TReq> request);
     }
 
     public interface IProviderBaixarBoleto<TReq>
@@ -23,18 +19,14 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
     {
         Task<ValidationResult> BaixarBoleto(TReq request);
     }
+   
 
-    public interface IProviderAlterarVencimento<TReq>
-    where TReq : RequestBase  
-    {
-        Task<ValidationResult> AlterarDataDeVencimentoBoleto(TReq request);
-    }
-
-    public interface IProviderAlterarValorBoleto<TReq>
+    public interface IProviderATualizarBoleto<TReq>
     where TReq : RequestBase
 
     {
         Task<ValidationResult> AlterarValorBoleto(TReq request);
+        Task<ValidationResult> AlterarDataDeVencimentoBoleto(TReq request);
     }
 
     public interface IProviderConsultaBoleto<TReq>
@@ -46,5 +38,4 @@ namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
 
 }
 
-/*
- */
+
