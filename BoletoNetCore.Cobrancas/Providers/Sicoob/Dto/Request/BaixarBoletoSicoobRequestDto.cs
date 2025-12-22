@@ -30,6 +30,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
             }
 
+           
             if (!validationResult.IsValid)
             {               
                 throw new Exception(validationResult.Message);

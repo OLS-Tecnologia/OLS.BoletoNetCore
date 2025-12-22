@@ -21,6 +21,20 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         {
             OLS.LibCore.Validate.ValidationResult validationResult = new();
 
+            if(RequestDto.DataVencimento is not null)
+            {
+                DateOnly DataAtual = DateOnly.FromDateTime(DateTime.Today);
+
+                if (RequestDto.DataVencimento < DataAtual)
+                    validationResult.AddMensagem("Data de vencimento não pode ser anterior a data atual.");
+            }
+
+            if (RequestDto.ValorNominal is not null)
+            {
+                if (RequestDto.ValorNominal < 0)
+                    validationResult.AddMensagem("Valor não pode ser menor que zero.");
+            }
+
             if (CodigoSolicitacao is null)
             {
                 validationResult.AddMensagem("Codigo Socilitação é obrigatório.");
@@ -61,11 +75,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
         }
 
         public AtualizarBoletoBody(double valorNominal)
-        {         
+        {
             ValorNominal = valorNominal;
         }
-
-
 
     }
 }

@@ -33,6 +33,18 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
         {
             OLS.LibCore.Validate.ValidationResult validationResult = new();
 
+            DateOnly DataAtual = DateOnly.FromDateTime(DateTime.Today);
+
+            if (Boleto.ProrrogacaoVencimento?.DataVencimento < DataAtual)
+            {
+                validationResult.AddMensagem("Data de vencimento da cobranca não pode ser menor que a data atual.");
+            }
+            if (Boleto.ValorNominal?.Valor < 0)
+            {
+                validationResult.AddMensagem("Valor do boleto não pode ser negativo.");
+            }
+
+
             if (!Enum.IsDefined(typeof(ModalidadeBoletoSicoob), Boleto.CodigoModalidade))
             {
                 string options = string.Join(", ", Enum.GetValues<ModalidadeBoletoSicoob>());

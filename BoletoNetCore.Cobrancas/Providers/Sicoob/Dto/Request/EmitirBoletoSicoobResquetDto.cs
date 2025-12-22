@@ -3,6 +3,7 @@ using BoletoNetCore.Cobrancas.Providers.BaseProvider.Entities;
 using BoletoNetCore.Cobrancas.Providers.BaseProvider.Enums;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Base;
 using BoletoNetCore.Cobrancas.Providers.Sicoob.Enums;
+using Microsoft.Extensions.Options;
 using OLS.LibCore.Validate;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -26,6 +27,37 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
             OLS.LibCore.Validate.ValidationResult listErros = new();
 
             DateOnly DataAtual = DateOnly.FromDateTime(DateTime.Today);
+
+            // Campos obrigatórios
+
+            if(Boleto.NumeroCliente == 0)
+            {
+                listErros.AddMensagem("Necessário informar o campo número cliente.");
+
+            }
+
+            if(Boleto.NumeroContaCorrente == 0)
+            {
+                listErros.AddMensagem("Necessário informar o campo número conta corrente.");
+
+            }
+
+            if(Boleto.SeuNumero == string.Empty)
+            {
+                listErros.AddMensagem("Necessário informar o campo seu número.");
+
+            }
+
+            if(Boleto.IdentificacaoEmissaoBoleto == 0)
+            {
+                listErros.AddMensagem("Necessário informar o campo codigo de identificação emissão do boleto.  Valores esperados: 1- Banco emite; 2 - Cliente emite");
+
+            }
+            if(Boleto.IdentificacaoDistribuicaoBoleto == 0)
+            {
+                listErros.AddMensagem("Necessário informar o campo codigo de distribuição emissão do boleto. Valores esperados: 1- Banco Distribui; 2 - Cliente distribui");
+
+            }
 
 
             if (Boleto.DataVencimento < DataAtual)
@@ -188,8 +220,9 @@ namespace BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Request
 
                 listErros.AddMensagem($"Valor Inválido para modalidade do boleto. Valores aceitos: {options}");
 
-            }
+            }          
 
+           
 
 
             if (!listErros.IsValid)

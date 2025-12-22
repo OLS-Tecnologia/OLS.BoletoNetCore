@@ -17,6 +17,13 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response
         public Pix? Pix { get; set; }
     };
 
+
+    /// <summary>
+    /// Campo NossoNumero:  Caso a cobrança esteja com a situação EM_PROCESSAMENTO, essa campo poderá não ser retornado
+    /// </summary>
+    /// <param name="NossoNumero"></param>
+    /// <param name="CodigoBarras"></param>
+    /// <param name="LinhaDigitavel"></param>
     public record Boleto(
         [property: JsonPropertyName("nossoNumero")] string NossoNumero,
         [property: JsonPropertyName("codigoBarras")] string CodigoBarras,

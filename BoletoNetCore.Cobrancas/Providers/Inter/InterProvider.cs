@@ -228,11 +228,10 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
 
                     HttpResponseMessage recuperarCobranca = await client.GetAsync(URI_Detalhe_boleto);
 
-                    string resultRecuperarCobranca = "";
+                    string resultRecuperarCobranca = await recuperarCobranca.Content.ReadAsStringAsync(); 
+
                     if (recuperarCobranca.IsSuccessStatusCode)
                     {
-                        resultRecuperarCobranca = await recuperarCobranca.Content.ReadAsStringAsync();
-
                         var response =  JsonSerializer.Deserialize<RecuperarCobrancaInterResponse>(resultRecuperarCobranca);
                         _validateResult.Object = response;
 
@@ -242,7 +241,7 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
                     else
                     {                       
                         _validateResult.AddMensagem($" Erro ao tentar bucar dados da cobrança com id {req.CodigoSolicitacao}.");
-                        _validateResult.AddMensagem($"Código Http: {recuperarCobranca?.StatusCode} : {recuperarCobranca?.ReasonPhrase}");
+                        _validateResult.AddMensagem($"Código Http: {recuperarCobranca?.StatusCode} : {resultRecuperarCobranca}");
 
                         return _validateResult;
                     }
@@ -407,12 +406,13 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter
 
                     client.Dispose();
 
-
                     DateTime currentDate = DateTime.UtcNow;
+
+                    var tempoExpiracao = tokenModel?.expires_in is not null ? tokenModel.expires_in - 15 : 0;
 
                     TokenRequest.access_token = tokenModel?.access_token ?? "";
                     TokenRequest.CreatedAt = currentDate;                   
-                    TokenRequest.ExpiredAt = currentDate.AddSeconds(tokenModel?.expires_in ?? 0);
+                    TokenRequest.ExpiredAt = currentDate.AddSeconds(tempoExpiracao);
 
                     return TokenRequest.access_token;
                 }

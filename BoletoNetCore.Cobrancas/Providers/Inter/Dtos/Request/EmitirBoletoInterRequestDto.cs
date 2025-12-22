@@ -26,6 +26,22 @@ namespace BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request
                 ListErrosValidacao.AddMensagem("Data de vencimento da cobranca deve ser data futura.");
             }
 
+            if (RequestDto.SeuNumero is null)
+            {
+                ListErrosValidacao.AddMensagem("Campo seu número é obrigatório.");
+            }
+
+            if (RequestDto.NumDiasAgenda == 0)
+            {
+                ListErrosValidacao.AddMensagem("Campo numero dias para cancelamento é obrigatório.");
+            }
+
+            if (RequestDto.ValorNominal == 0)
+            {
+                ListErrosValidacao.AddMensagem("Campo valor é brigatório.");
+            }
+           
+
 
 
             if (!Enum.IsDefined(typeof(TipoPessoa), RequestDto.Pagador.TipoPessoa))

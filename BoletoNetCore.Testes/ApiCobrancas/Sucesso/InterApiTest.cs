@@ -1,8 +1,7 @@
 ﻿using BoletoNetCore.Cobrancas.Factory;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Request;
 using BoletoNetCore.Cobrancas.Providers.Inter.Dtos.Response;
-using BoletoNetCore.Cobrancas.Providers.Inter.Entities;
-using BoletoNetCore.Cobrancas.Providers.Sicoob.Dto.Response;
+using BoletoNetCore.Testes.ApiCobrancas.Makers.Inter;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore.Testes.ApiCobrancas
+namespace BoletoNetCore.Testes.ApiCobrancas.Sucesso
 {
 
     [TestFixture]
@@ -24,57 +23,20 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         public string ArquivoChave = @"C:\Users\fabio\Downloads\Inter_API-Chave_e_Certificado\Sandbox_InterAPI_Chave.key";
         public string ClientId = "32d83ffa-ba06-44a3-9ef3-c0736b15e209";
         public string ClientSecret = "732171c2-391c-4baf-a632-8d31a449d171";
-
+        private string UrlSandBox = "https://cdpj-sandbox.partners.uatinter.co";
         private string CodigoCobranca { get; set; } = string.Empty ;
 
         [Test, Order(1)]
         public async Task EmitirCobrancaSucesso()
         {
 
-            var provider = ProviderFactory.EmitirBoleto<EmitirBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+            var provider = ProviderFactory.EmitirBoleto<EmitirBoletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
 
-            var pagador = new PagadorInter()
-            {
-                CpfCnpj =  "63037800674", 
-                TipoPessoa = "FISICA",
-                Nome =  "Wanderson",
-                Cep=  "35030446",
-                Uf = "MG", 
-                Cidade = "Governador Valadares",
-                Endereco=  "Pedro Lessa",
-                Bairro=   "Lourdes", 
-                Numero=  "1685",
-                Ddd = "33",
-                Telefone= "666666555", 
-                Complemento = "Casa",
-                Email= "teste@gmail.com"
-            };
+            var pagador = PagadorInterMaker.MakePagador();
 
-            string seuNumero = Random.Shared.Next(100000, 1000000).ToString();
+            var interRequest = EmitirCobrancaMaker.MakeCobrancaInter(pagador, ClientSecret, ArquivoCertificado, ArquivoChave, ClientId);
 
-            var body = new EmitirBoletoInterRequestBody()
-            {
-              SeuNumero=  seuNumero, 
-              ValorNominal=  2.5, 
-              DataVencimento =   new DateOnly(2026, 09, 07), 
-              NumDiasAgenda =  60, 
-              Pagador=   pagador, 
-            };
-         
-
-            var interRequest = new EmitirBoletoInterRequestDto()
-            {
-                RequestDto = body,
-                ClientSecret = ClientSecret, 
-                ArquivoCertificado = ArquivoCertificado,
-                ArquivoChave = ArquivoChave,
-                ClientId = ClientId,
-                XContaCorrente = "1234"
-               
-                
-            };    
-            var listRquest = new List<EmitirBoletoInterRequestDto>() { interRequest };
-              
+            var listRquest = new List<EmitirBoletoInterRequestDto>() { interRequest };              
 
             var result = await provider.EmitirBoleto(listRquest);
 
@@ -90,9 +52,10 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         public async Task BuscarCobrancaSucesso()
         {
 
-            var provider = ProviderFactory.ConsultarBoleto<ConsultarBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+            var provider = ProviderFactory.ConsultarBoleto<ConsultarBoletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
 
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
+
             var ConsultarBoletoRequest = new ConsultarBoletoInterRequestDto()
             {
                 CodigoSolicitacao = cobrancaAtual,
@@ -114,13 +77,12 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(3)]
         public async Task AtualizarValorBoletoSucesso()
         {
-            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
 
             double novoValor = 5.5;
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
 
-            AtualizarBoletoBody body = new AtualizarBoletoBody(novoValor);
-         
+            AtualizarBoletoBody body = new AtualizarBoletoBody(novoValor);         
 
             var request = new AtualizarboletoInterRequestDto()
             {
@@ -144,7 +106,7 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         public async Task AtualizarDataVencimentoBoletoSucesso()
         {
 
-            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+            var provider = ProviderFactory.AtualizarBoleto<AtualizarboletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
 
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
             DateOnly dataVencimento = DateOnly.FromDateTime(new DateTime(2026,12,30));
@@ -172,7 +134,7 @@ namespace BoletoNetCore.Testes.ApiCobrancas
         [Test, Order(5)]
         public async Task CancelarCobrancaSucesso()
         {
-            var provider = ProviderFactory.BaixarBoleto<CancelamentoBoletoInterRequestDto>(Bancos.BancoInter, "https://cdpj-sandbox.partners.uatinter.co");
+            var provider = ProviderFactory.BaixarBoleto<CancelamentoBoletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
 
             string cobrancaAtual = CodigoCobranca ?? "ec683c5e-5c71-4ff2-8213-5fc39d8a35f4";
 
@@ -193,6 +155,36 @@ namespace BoletoNetCore.Testes.ApiCobrancas
             var result = await provider.BaixarBoleto(request);
 
             Assert.AreEqual(HttpStatusCode.Accepted, result.Object);
+        }
+
+        [Test, Order(6)]
+        public async Task EmitirLoteCobrancasSucesso()
+        {
+
+            var provider = ProviderFactory.EmitirBoleto<EmitirBoletoInterRequestDto>(Bancos.BancoInter, UrlSandBox);
+
+            var pagador = PagadorInterMaker.MakePagador();
+
+            string seuNumero = Random.Shared.Next(100000, 1000000).ToString();           
+
+            var interRequest = EmitirCobrancaMaker.MakeCobrancaInter(pagador, ClientSecret, ArquivoCertificado, ArquivoChave, ClientId);
+           
+
+            var request2 = EmitirCobrancaMaker.MakeCobrancaInter(pagador, ClientSecret, ArquivoCertificado, ArquivoChave, ClientId);
+
+            request2.ClientId = "3333333333";
+
+
+            var listRquest = new List<EmitirBoletoInterRequestDto>() { interRequest, request2 };
+
+            var result = await provider.EmitirBoleto(listRquest);
+
+            Assert.AreEqual(result.IsValid, true);
+
+            Assert.IsInstanceOf(typeof(RecuperarCobrancaInterResponse), ((List<RecuperarCobrancaInterResponse>)result.Object).FirstOrDefault());
+
+            CodigoCobranca = ((List<RecuperarCobrancaInterResponse>)result.Object).FirstOrDefault()?.Cobranca.CodigoSolicitacao;
+
         }
     }
 }

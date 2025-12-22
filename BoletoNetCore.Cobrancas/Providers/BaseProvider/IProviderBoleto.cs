@@ -1,8 +1,5 @@
 ﻿using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Request;
-using BoletoNetCore.Cobrancas.Providers.BaseProvider.Dtos.Response;
 using OLS.LibCore.Validate;
-using Org.BouncyCastle.Ocsp;
-using System.Net;
 
 
 namespace BoletoNetCore.Cobrancas.Providers.BaseProvider
