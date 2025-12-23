@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BoletoNetCore.QuestPdf
+namespace OLS.BoletoNetCore.QuestPdf
 {
     internal static  class DecimalHelper
     {

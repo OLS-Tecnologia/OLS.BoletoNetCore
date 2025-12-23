@@ -1,9 +1,7 @@
-﻿using System;
+﻿using OLS.BoletoNetCore.Exceptions;
 using System.Collections.Generic;
-using BoletoNetCore.Exceptions;
-using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal sealed partial class BancoSantander : BancoFebraban<BancoSantander>, IBanco
     {

@@ -1,8 +1,13 @@
+<<<<<<< Updated upstream
 ﻿using System;
 using System.IO;
 using System.Text;
+=======
+﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
+using System;
+>>>>>>> Stashed changes
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace BoletoNetCore.Testes
 {

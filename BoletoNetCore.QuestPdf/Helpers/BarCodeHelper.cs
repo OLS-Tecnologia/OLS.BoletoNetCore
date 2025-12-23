@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace BoletoNetCore.QuestPdf
+namespace OLS.BoletoNetCore.QuestPdf
 {
     internal static class BarCodeHelper
     {

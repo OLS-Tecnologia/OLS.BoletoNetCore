@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal enum DateInterval
     {

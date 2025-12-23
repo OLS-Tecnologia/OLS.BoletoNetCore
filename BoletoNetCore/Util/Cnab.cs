@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public static class Cnab
     {

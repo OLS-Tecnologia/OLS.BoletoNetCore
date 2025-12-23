@@ -1,4 +1,4 @@
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     /// <summary>
     /// Representa o endereço do Beneficiário ou Pagador.

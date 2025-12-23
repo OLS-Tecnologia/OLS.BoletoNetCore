@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("1")]
     internal class BancoNordesteCarteira1 : ICarteira<BancoNordeste>

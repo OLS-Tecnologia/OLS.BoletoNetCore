@@ -1,7 +1,8 @@
-﻿using System;
+﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
+using System;
 using System.IO;
 using System.Text;
-using NUnit.Framework;
 using Wkhtmltopdf.NetCore;
 
 namespace BoletoNetCore.Testes

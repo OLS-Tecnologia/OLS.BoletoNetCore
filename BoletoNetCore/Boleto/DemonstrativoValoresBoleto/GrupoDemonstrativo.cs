@@ -1,4 +1,4 @@
-﻿namespace BoletoNetCore
+﻿namespace OLS.BoletoNetCore
 {
 	using System.Collections.ObjectModel;
 	public class GrupoDemonstrativo

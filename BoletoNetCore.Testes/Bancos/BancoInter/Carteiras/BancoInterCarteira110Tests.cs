@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
 using System;
 using System.Collections.Generic;
 using System.IO;

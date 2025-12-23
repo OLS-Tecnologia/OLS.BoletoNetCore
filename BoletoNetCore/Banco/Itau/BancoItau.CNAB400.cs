@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BoletoNetCore.Exceptions;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoItau : IBancoCNAB400
     {

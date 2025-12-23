@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
+﻿using OLS.BoletoNetCore.Exceptions;
+using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoBrasil : IBancoCNAB400
     {

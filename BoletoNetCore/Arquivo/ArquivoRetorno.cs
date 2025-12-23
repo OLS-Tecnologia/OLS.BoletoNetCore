@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class ArquivoRetorno
     {

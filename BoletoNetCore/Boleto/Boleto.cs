@@ -1,11 +1,11 @@
-﻿using BoletoNetCore.Enums;
+﻿using OLS.BoletoNetCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [Serializable]
     [Browsable(false)]
@@ -238,7 +238,7 @@ namespace BoletoNetCore
         public Pagador Avalista { get; set; } = new Pagador();
         public CodigoBarra CodigoBarra { get; } = new CodigoBarra();
         public ObservableCollection<GrupoDemonstrativo> Demonstrativos { get; } = new ObservableCollection<GrupoDemonstrativo>();
-        public string ParcelaInformativo { get; set; } = string.Empty;
+        public string ParcelaInformativo { get; set; } = string.Empty;        
         public string ByteNossoNumero { get; set; } = "2";
         public string QRCode { get; set; }
         public string TxId { get; set; }

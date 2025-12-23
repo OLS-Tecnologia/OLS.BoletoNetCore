@@ -1,10 +1,8 @@
 using SkiaSharp;
 using System;
 using System.Globalization;
-using System.IO;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public static class Utils
     {

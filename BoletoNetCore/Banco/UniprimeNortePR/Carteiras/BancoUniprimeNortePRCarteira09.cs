@@ -1,7 +1,7 @@
-using BoletoNetCore.Extensions;
+using OLS.BoletoNetCore.Extensions;
 using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("09")]
     public class BancoUniprimeNortePRCarteira09 : ICarteira<BancoUniprimeNortePR>

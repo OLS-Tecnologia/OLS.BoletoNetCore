@@ -1,23 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>BoletoNetCore.QuestPdf</PackageId>
+    <PackageId>OLS.Lib.BoletoNetCore.QuestPdf</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-	  <version>3.0.0</version>
-	  <authors>BoletoNetCore</authors>
-	  <owners>BoletoNetCore</owners>
-	  <projectUrl>https://github.com/BoletoNet/BoletoNetCore/</projectUrl>
+	  <version>1.0.3</version>
+	  <authors>OLS Tecnologia</authors>
+	  <!--<owners>BoletoNetCore</owners>-->
+	  <!--<projectUrl>https://github.com/BoletoNet/BoletoNetCore/</projectUrl>
 	  <iconUrl>https://https://avatars2.githubusercontent.com/u/10621326?v=3amp;s=200</iconUrl>
-	  <requireLicenseAcceptance>true</requireLicenseAcceptance>
+	  <requireLicenseAcceptance>true</requireLicenseAcceptance>-->
 	  <description>
-		  BoletoNetCore is a library developed for use in Brazil, given it has been programmed with Brazilian retail legislation and business rules for bank registered billing integration.
-		  Boleto.Net é um componente desenvolvido em C# e ASP.Net e contempla as seguintes funcionalidades:
-		  Emissão e Impressão de Boletos Bancários
-		  Geração de Arquivo de Remessa (CNAB 240 e 400)
-		  Leitura do Arquivo de Retorno (CNAB 240 e 400)
+		  Gerador de boleto com a lib QuestPDF
 	  </description>
-	  <summary>BoletoNetCore is a library developed for use in Brazil, given it has been programmed with Brazilian retail legislation and business rules for bank registered billing integration.</summary>
-	  <tags>boleto cnab banco pdf</tags>
+	  <!--<summary>BoletoNetCore is a library developed for use in Brazil, given it has been programmed with Brazilian retail legislation and business rules for bank registered billing integration.</summary>
+	  <tags>boleto cnab banco pdf</tags>-->
 	  <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
@@ -28,6 +24,7 @@
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Barcoder" Version="1.0.0.90" />
     <PackageReference Include="Barcoder.Renderer.Image" Version="1.0.0.90" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -163,7 +160,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BoletoNetCore\BoletoNetCore.csproj" />
+    <ProjectReference Include="..\BoletoNetCore.Pdf\BoletoNetCore.Pdf.csproj" />
+    <ProjectReference Include="..\BoletoNetCore\OLS.BoletoNetCore.csproj" />
   </ItemGroup>
 
 </Project>

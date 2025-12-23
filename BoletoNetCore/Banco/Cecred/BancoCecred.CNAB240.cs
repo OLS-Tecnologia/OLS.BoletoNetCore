@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoCecred : IBancoCNAB240
     {

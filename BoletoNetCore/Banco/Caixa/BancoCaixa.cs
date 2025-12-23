@@ -1,9 +1,9 @@
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
+using OLS.BoletoNetCore.Exceptions;
+using OLS.BoletoNetCore.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal sealed partial class BancoCaixa : BancoFebraban<BancoCaixa>, IBanco
     {

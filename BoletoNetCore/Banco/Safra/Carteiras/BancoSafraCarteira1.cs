@@ -1,9 +1,9 @@
-﻿using System;
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
+﻿using OLS.BoletoNetCore.Exceptions;
+using OLS.BoletoNetCore.Extensions;
+using System;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("1")]
     internal class BancoSafraCarteira1 : ICarteira<BancoSafra>

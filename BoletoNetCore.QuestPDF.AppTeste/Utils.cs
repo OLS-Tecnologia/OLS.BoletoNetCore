@@ -1,6 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
+﻿using OLS.BoletoNetCore;
+using System;
 
 namespace BoletoNetCore.QuestPDF.AppTeste
 {
@@ -10,24 +9,25 @@ namespace BoletoNetCore.QuestPDF.AppTeste
 
         private static int _proximoNossoNumero = 1;
 
-        internal static Beneficiario GerarBeneficiario(string codigoBeneficiario, string digitoCodigoBeneficiario, string codigoTransmissao, ContaBancaria contaBancaria)
+        internal static 
+            Beneficiario GerarBeneficiario(string codigoBeneficiario, string digitoCodigoBeneficiario, string codigoTransmissao, ContaBancaria contaBancaria)
         {
             return new Beneficiario
             {
-                CPFCNPJ = "86.875.666/0001-09",
-                Nome = "Beneficiario Teste",
+                CPFCNPJ = "56.908.293/0001-64",
+                Nome = "CARTAO DE DESCONTOS SAO MATHEUS LTDA",
                 Codigo = codigoBeneficiario,
                 CodigoDV = digitoCodigoBeneficiario,
                 CodigoTransmissao = codigoTransmissao,
                 Endereco = new Endereco
                 {
-                    LogradouroEndereco = "Rua Teste do Beneficiário",
-                    LogradouroNumero = "789",
+                    LogradouroEndereco = " AV. MINAS GERAIS",
+                    LogradouroNumero = "448",
                     LogradouroComplemento = "Cj 333",
-                    Bairro = "Bairro",
-                    Cidade = "Cidade",
-                    UF = "SP",
-                    CEP = "65432987"
+                    Bairro = "CENTRO",
+                    Cidade = "GOVERNADOR VALADARES",
+                    UF = "MG",
+                    CEP = "35010-151"
                 },
                 ContaBancaria = contaBancaria
             };
@@ -39,31 +39,31 @@ namespace BoletoNetCore.QuestPDF.AppTeste
                 return new Pagador
                 {
                     CPFCNPJ = "443.316.101-28",
-                    Nome = "Pagador Teste PF",
+                    Nome = "CONSUMIDOR",
                     Observacoes = "Matricula 678/9",
                     Endereco = new Endereco
                     {
-                        LogradouroEndereco = "Rua Testando",
-                        LogradouroNumero = "456",
-                        Bairro = "Bairro",
-                        Cidade = "Cidade",
-                        UF = "SP",
-                        CEP = "56789012"
+                        LogradouroEndereco = "RUA PEDRO LESSA",
+                        LogradouroNumero = "1645",
+                        Bairro = "VILA BRETAS",
+                        Cidade = " GOVERNADOR VALADARES",
+                        UF = "MG",
+                        CEP = "35030-080"
                     }
                 };
             return new Pagador
             {
-                CPFCNPJ = "71.738.978/0001-01",
-                Nome = "Pagador Teste PJ",
-                Observacoes = "Matricula 123/4",
+                CPFCNPJ = "443.316.101-28",
+                Nome = "CONSUMIDOR",
+                Observacoes = "Matricula 678/9",
                 Endereco = new Endereco
                 {
-                    LogradouroEndereco = "Avenida Testando",
-                    LogradouroNumero = "123",
-                    Bairro = "Bairro",
-                    Cidade = "Cidade",
-                    UF = "SP",
-                    CEP = "12345678"
+                    LogradouroEndereco = "RUA PEDRO LESSA",
+                    LogradouroNumero = "1645",
+                    Bairro = "VILA BRETAS",
+                    Cidade = " GOVERNADOR VALADARES",
+                    UF = "MG",
+                    CEP = "35030-080"
                 }
             };
         }
@@ -89,7 +89,7 @@ namespace BoletoNetCore.QuestPDF.AppTeste
                 Pagador = GerarPagador(),
                 DataEmissao = DateTime.Now.AddDays(-3),
                 DataProcessamento = DateTime.Now,
-                DataVencimento = DateTime.Now.AddMonths(i),
+                DataVencimento = DateTime.Now.AddMonths(5),
                 ValorTitulo = (decimal)100 * i,
                 NossoNumero = NossoNumeroInicial == 0 ? "" : (NossoNumeroInicial + _proximoNossoNumero).ToString(),
                 NumeroDocumento = "BB" + _proximoNossoNumero.ToString("D6") + (char)(64 + i),
@@ -121,6 +121,5 @@ namespace BoletoNetCore.QuestPDF.AppTeste
             _proximoNossoNumero++;
             return boleto;
         }
-
     }
 }

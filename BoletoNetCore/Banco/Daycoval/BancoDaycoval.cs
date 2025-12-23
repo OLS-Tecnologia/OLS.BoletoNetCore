@@ -1,9 +1,7 @@
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
-using System;
+using OLS.BoletoNetCore.Exceptions;
 using System.Collections.Generic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal sealed partial class BancoDaycoval : BancoFebraban<BancoDaycoval>, IBanco
     {

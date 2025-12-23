@@ -2,9 +2,13 @@
 
   <PropertyGroup>
     <IsPackable>false</IsPackable>
+<<<<<<< Updated upstream
     <TargetFramework>net7.0</TargetFramework>
     <AssemblyVersion>25.7.9323.0</AssemblyVersion>
     <FileVersion>25.7.9323.0</FileVersion>
+=======
+    <TargetFramework>net8.0</TargetFramework>
+>>>>>>> Stashed changes
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BoletoNetCore.Pdf\BoletoNetCore.Pdf.csproj" />
-    <ProjectReference Include="..\BoletoNetCore\BoletoNetCore.csproj" />
+    <ProjectReference Include="..\BoletoNetCore\OLS.BoletoNetCore.csproj" />
   </ItemGroup>
 
 </Project>

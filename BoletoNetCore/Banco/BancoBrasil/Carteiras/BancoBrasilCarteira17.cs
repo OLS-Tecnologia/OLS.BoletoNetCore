@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("17/019", "17/027", "17/035", "17/043")]
     internal class BancoBrasilCarteira17 : ICarteira<BancoBrasil>

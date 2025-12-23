@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     //Classes básicas para manipulação de registros para geração/interpretação de EDI
 

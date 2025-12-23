@@ -1,11 +1,10 @@
+using OLS.BoletoNetCore.BTGPactual;
+using OLS.BoletoNetCore.Exceptions;
+using OLS.BoletoNetCore.Extensions;
 using System;
 using System.Collections.Generic;
-using BoletoNetCore.BTGPactual;
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
-using Microsoft.VisualBasic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public static class Banco
     {

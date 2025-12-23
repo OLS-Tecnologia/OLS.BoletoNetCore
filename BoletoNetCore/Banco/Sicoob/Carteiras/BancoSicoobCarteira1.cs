@@ -1,9 +1,8 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using BoletoNetCore.Extensions;
+﻿using OLS.BoletoNetCore.Extensions;
+using System;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("1/01")]
     internal class BancoSicoobCarteira1: ICarteira<BancoSicoob>

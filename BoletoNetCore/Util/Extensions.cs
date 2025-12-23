@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Collections;
 using System.Threading;
 
-namespace BoletoNetCore.Util
+namespace OLS.BoletoNetCore.Util
 {
     public static class Extensions
     {

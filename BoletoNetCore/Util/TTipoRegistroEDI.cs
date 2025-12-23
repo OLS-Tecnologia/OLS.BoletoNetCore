@@ -1,4 +1,4 @@
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     /// <summary>
     /// Indica os tipos de registro possíveis em um arquivo EDI

@@ -1,10 +1,10 @@
 ﻿using BoletoNetCore.WebAPI.Extensions;
-using BoletoNetCore.WebAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OLS.BoletoNetCore;
 using System.Net;
 
-namespace BoletoNetCore.WebAPI.Controllers
+namespace BoletoNetCore.WebAPI.Models
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -58,7 +58,7 @@ namespace BoletoNetCore.WebAPI.Controllers
 
             try
             {
-                if(dadosBoleto.BeneficiarioResponse.CPFCNPJ == null || (dadosBoleto.BeneficiarioResponse.CPFCNPJ.Length != 11 && dadosBoleto.BeneficiarioResponse.CPFCNPJ.Length != 14))
+                if (dadosBoleto.BeneficiarioResponse.CPFCNPJ == null || dadosBoleto.BeneficiarioResponse.CPFCNPJ.Length != 11 && dadosBoleto.BeneficiarioResponse.CPFCNPJ.Length != 14)
                 {
                     var retorno = metodosUteis.RetornarErroPersonalizado((int)HttpStatusCode.BadRequest, "Requisição Inválida", "CPF/CNPJ inválido: Utilize 11 dígitos para CPF ou 14 para CNPJ.", "/api/Boletos/BoletoItau");
                     return BadRequest(retorno);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     //Essa classe vai receber os dados da nota fiscal eletrônica do boleto em questão
     //exigência do Banco Daycoval

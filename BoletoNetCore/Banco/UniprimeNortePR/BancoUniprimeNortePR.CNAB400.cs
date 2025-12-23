@@ -1,6 +1,6 @@
 using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoUniprimeNortePR : IBancoCNAB400
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public interface IBanco
     {

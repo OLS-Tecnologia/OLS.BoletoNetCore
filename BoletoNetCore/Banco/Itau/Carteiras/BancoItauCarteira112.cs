@@ -1,8 +1,8 @@
-﻿using System;
-using BoletoNetCore.Extensions;
+﻿using OLS.BoletoNetCore.Extensions;
+using System;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("112")]
     internal class BancoItauCarteira112 : ICarteira<BancoItau>

@@ -1,4 +1,4 @@
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     /// <summary>
     /// Representa cada tipo de dado possível em um arquivo EDI.

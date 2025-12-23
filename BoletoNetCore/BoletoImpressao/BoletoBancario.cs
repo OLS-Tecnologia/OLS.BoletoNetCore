@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using SkiaSharp;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     using System.Globalization;
     using System.Linq;

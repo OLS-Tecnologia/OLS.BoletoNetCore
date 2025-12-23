@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     /// <summary>
     /// Classe Auxiliar com métodos de extensão para executar comandos a partir de um Boleto ou de uma lista de boletos

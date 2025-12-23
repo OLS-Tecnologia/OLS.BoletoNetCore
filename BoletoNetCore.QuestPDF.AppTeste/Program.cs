@@ -1,4 +1,6 @@
-﻿using System;
+﻿using OLS.BoletoNetCore;
+using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace BoletoNetCore.QuestPDF.AppTeste
@@ -28,18 +30,26 @@ namespace BoletoNetCore.QuestPDF.AppTeste
                     TipoFormaCadastramento = TipoFormaCadastramento.ComRegistro,
                     TipoImpressaoBoleto = TipoImpressaoBoleto.Empresa,
                     OperacaoConta = "05"
-
                 };
                 var banco = Banco.Instancia(Bancos.Sicredi);
                 banco.Beneficiario = Utils.GerarBeneficiario("85305", "", "", contaBancaria);
                 banco.FormataBeneficiario();
 
-                var boletos = Utils.GerarBoletos(banco, 4, "N", 10);
+                var quantidadeBoletos = 500;
+
+                var boletos = Utils.GerarBoletos(banco, quantidadeBoletos, "N", 10);
+                 
+                var sw = new Stopwatch();
+                sw.Start();
                 var bytes = boletos.ImprimirCarnePdf();
+                sw.Stop();
+
+                Console.WriteLine($"{quantidadeBoletos} boletos gerados em {sw.ElapsedMilliseconds}ms | {(sw.ElapsedMilliseconds / 60000)} minuto(s)");
+
                 Console.WriteLine("Pdf gerado, salvando arquivo...");
                 var fileName = Path.Combine(currentDir, "carne.pdf");
                 File.WriteAllBytes(fileName, bytes);
-                Console.WriteLine("Pdf gerado com sucesso: " + fileName);
+                Console.WriteLine("Pdf gerado com sucesso: " + fileName);                
             }
             catch (Exception ex)
             {
@@ -49,6 +59,7 @@ namespace BoletoNetCore.QuestPDF.AppTeste
             finally
             {
                 Console.ReadKey();
+            
             }
         }
     }

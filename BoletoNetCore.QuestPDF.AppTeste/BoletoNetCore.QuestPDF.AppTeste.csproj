@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BoletoNetCore.QuestPdf\BoletoNetCore.QuestPdf.csproj" />
-    <ProjectReference Include="..\BoletoNetCore\BoletoNetCore.csproj" />
+    <ProjectReference Include="..\BoletoNetCore\OLS.BoletoNetCore.csproj" />
   </ItemGroup>
 
 </Project>

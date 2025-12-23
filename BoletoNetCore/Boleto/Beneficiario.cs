@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [Serializable, Browsable(false)]
     public class Beneficiario

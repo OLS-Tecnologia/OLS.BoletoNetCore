@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [ProgId(nameof(BoletoNetCoreProxy))]
     [ComVisible(true)]

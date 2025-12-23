@@ -1,7 +1,7 @@
 ﻿using System;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("11/019")]
     internal class BancoBrasilCarteira11 : ICarteira<BancoBrasil>

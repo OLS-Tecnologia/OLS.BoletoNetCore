@@ -1,7 +1,7 @@
-using BoletoNetCore.Exceptions;
+using OLS.BoletoNetCore.Exceptions;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class ContaBancaria
     {

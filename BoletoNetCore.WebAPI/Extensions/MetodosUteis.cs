@@ -1,4 +1,5 @@
 ﻿using BoletoNetCore.WebAPI.Models;
+using OLS.BoletoNetCore;
 
 namespace BoletoNetCore.WebAPI.Extensions
 {

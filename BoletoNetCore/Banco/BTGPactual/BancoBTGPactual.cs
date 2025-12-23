@@ -1,9 +1,7 @@
-﻿using System;
+﻿using OLS.BoletoNetCore.Exceptions;
 using System.Collections.Generic;
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
 
-namespace BoletoNetCore.BTGPactual
+namespace OLS.BoletoNetCore.BTGPactual
 {
     public class BancoBTGPactual: BancoFebraban<BancoBTGPactual>, IBanco
     {

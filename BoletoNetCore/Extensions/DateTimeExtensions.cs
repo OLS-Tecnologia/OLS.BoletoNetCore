@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoletoNetCore.Extensions
+namespace OLS.BoletoNetCore.Extensions
 {
     public static class DateTimeExtensions
     {

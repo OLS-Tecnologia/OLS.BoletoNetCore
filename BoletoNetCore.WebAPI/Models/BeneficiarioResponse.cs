@@ -1,4 +1,6 @@
-﻿namespace BoletoNetCore.WebAPI.Models
+﻿using OLS.BoletoNetCore;
+
+namespace BoletoNetCore.WebAPI.Models
 {
     public class BeneficiarioResponse
     {

@@ -1,8 +1,7 @@
-﻿using BoletoNetCore.Exceptions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
+using OLS.BoletoNetCore.Exceptions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BoletoNetCore.Testes
 {
@@ -153,7 +152,7 @@ namespace BoletoNetCore.Testes
 
             _boleto.Banco.ValidaBoleto(_boleto);
             _boleto.Banco.FormataNossoNumero(_boleto);
-            BoletoNetCore.Banco.FormataCodigoBarra(_boleto);
+            OLS.BoletoNetCore.Banco.FormataCodigoBarra(_boleto);
 
             Banco.FormataLinhaDigitavel(_boleto);
 

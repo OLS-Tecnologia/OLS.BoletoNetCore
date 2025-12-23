@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoletoNetCore.Exceptions
+namespace OLS.BoletoNetCore.Exceptions
 {
     public sealed class BoletoNetCoreException : Exception
     {

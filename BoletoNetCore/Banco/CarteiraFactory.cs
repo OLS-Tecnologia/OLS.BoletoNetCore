@@ -1,10 +1,10 @@
-﻿using System;
+﻿using OLS.BoletoNetCore.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using BoletoNetCore.Exceptions;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal static class CarteiraFactory<T>
         where T : IBanco

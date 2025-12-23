@@ -1,8 +1,6 @@
-﻿using BoletoNetCore.Exceptions;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoFebraban<T>
     {

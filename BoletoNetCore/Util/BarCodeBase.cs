@@ -1,6 +1,6 @@
 using SkiaSharp;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public abstract class BarCodeBase
     {

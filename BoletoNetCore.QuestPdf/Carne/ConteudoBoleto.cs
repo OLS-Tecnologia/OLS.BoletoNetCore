@@ -1,10 +1,7 @@
-using System;
-using BoletoNetCore;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace BoletoNetCore.QuestPdf
+namespace OLS.BoletoNetCore.QuestPdf
 {
     internal class ConteudoBoleto : IComponent
     {

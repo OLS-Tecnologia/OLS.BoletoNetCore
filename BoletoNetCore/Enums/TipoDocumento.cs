@@ -1,4 +1,4 @@
-﻿namespace BoletoNetCore
+﻿namespace OLS.BoletoNetCore
 {
     public enum TipoDocumento
     {

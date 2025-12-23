@@ -1,8 +1,7 @@
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace BoletoNetCore.QuestPdf
+namespace OLS.BoletoNetCore.QuestPdf
 {
     internal static class BoletoPdfConstants
     {

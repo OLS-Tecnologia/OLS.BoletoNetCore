@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class Boletos : List<Boleto>
     {

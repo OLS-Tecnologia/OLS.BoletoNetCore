@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoletoNetCore", "BoletoNetCore\BoletoNetCore.csproj", "{F173E80B-E36B-48AD-B483-A27F8CA86F3C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OLS.BoletoNetCore", "BoletoNetCore\OLS.BoletoNetCore.csproj", "{F173E80B-E36B-48AD-B483-A27F8CA86F3C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoletoNetCore.Testes", "BoletoNetCore.Testes\BoletoNetCore.Testes.csproj", "{92951948-996F-4F22-AB35-74B06C45E1D4}"
 EndProject
@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoletoNetCore.QuestPdf", "B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoletoNetCore.QuestPDF.AppTeste", "BoletoNetCore.QuestPDF.AppTeste\BoletoNetCore.QuestPDF.AppTeste.csproj", "{D5332CA6-4354-40C9-BDB3-337B4BDC7C9E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoletoNetCore.WebAPI", "BoletoNetCore.WebAPI\BoletoNetCore.WebAPI.csproj", "{47694BE9-A995-4358-95AC-69F300568A9C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BoletoNetCore.WebAPI", "BoletoNetCore.WebAPI\BoletoNetCore.WebAPI.csproj", "{47694BE9-A995-4358-95AC-69F300568A9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

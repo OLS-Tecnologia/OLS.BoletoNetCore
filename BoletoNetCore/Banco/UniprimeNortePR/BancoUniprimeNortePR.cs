@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using BoletoNetCore.Extensions;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal sealed partial class BancoUniprimeNortePR : BancoFebraban<BancoUniprimeNortePR>, IBanco
     {

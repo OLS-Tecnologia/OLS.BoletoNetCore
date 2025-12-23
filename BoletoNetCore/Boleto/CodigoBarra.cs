@@ -1,7 +1,7 @@
-using BoletoNetCore.Util;
+using OLS.BoletoNetCore.Extensions;
 using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class CodigoBarra
     {

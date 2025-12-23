@@ -1,7 +1,6 @@
-﻿using System;
+﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
 using System.Linq;
-using BoletoNetCore.Extensions;
-using NUnit.Framework;
 
 namespace BoletoNetCore.Testes
 {

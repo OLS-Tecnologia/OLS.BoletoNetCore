@@ -1,7 +1,7 @@
+using OLS.BoletoNetCore.Util;
 using System;
-using BoletoNetCore.Util;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoSicredi : IBancoCNAB240
     {

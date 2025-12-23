@@ -1,16 +1,22 @@
-using BoletoNetCore;
-using QuestPDF.Drawing;
-using QuestPDF.Infrastructure;
-using QuestPDF.Fluent;
-using System;
+using BoletoNetCore.QuestPdf.Carne;
 using Microsoft.Extensions.FileProviders;
+using QuestPDF.Drawing;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
+using System.Linq;
 using System.Reflection;
 
-namespace BoletoNetCore.QuestPdf
+namespace OLS.BoletoNetCore.QuestPdf
 {
     internal class BoletoCarne : IDocument
     {
-        private BoletoNetCore.Boletos listaBoletos;
+        private Boletos listaBoletos;
+        private int _codBanco;
+        private byte[] _logo;
+
+        public BoletoCarne()
+        {            
+        }
 
         public void Compose(IDocumentContainer container)
         {
@@ -33,24 +39,38 @@ namespace BoletoNetCore.QuestPdf
             }
         }
 
+        private byte[] ObterLogoBanco(int codBanco)
+        {
+            var embeddedProvider = new EmbeddedFileProvider(Assembly.GetExecutingAssembly());
+            using (var reader = embeddedProvider.GetFileInfo($"logos/{codBanco.ToString("000")}.bmp").CreateReadStream())
+            {
+                var logo = new byte[reader.Length];
+                reader.Read(logo, 0, (int)reader.Length);
+                return logo;
+            }
+        }
+
         private void ComposeContent(IContainer container)
         {
             container.Stack(stack =>
             {
                 byte[] logo = null;
-                int codBanco = 0;
+                var codBanco = this.listaBoletos?.Select(x => x.Banco.Codigo).FirstOrDefault() ?? 0;
+
+                _logo = ObterLogoBanco(codBanco);
+
                 foreach (var bol in this.listaBoletos)
                 {
-                    if (logo == null || codBanco != bol.Banco.Codigo)
-                    {
-                        codBanco = bol.Banco.Codigo;
-                        logo = this.ObterLogoBanco(bol.Banco);
-                    }
+                    //if (logo == null || codBanco != bol.Banco.Codigo)
+                    //{
+                    //    codBanco = bol.Banco.Codigo;
+                    //    logo = this.ObterLogoBanco(codBanco);
+                    //}                    
 
                     stack.Item().Row(row =>
                     {
-                        row.ConstantColumn(100).Component(new ReciboLateralCarne(bol, logo));
-                        row.RelativeColumn().PaddingLeft(5).Component(new ConteudoBoleto(bol, logo));
+                        row.ConstantColumn(100).Component(new ReciboLateralCarne(new BoletoViewModel(bol), _logo));
+                        row.RelativeColumn().PaddingLeft(5).Component(new ConteudoBoleto(bol, _logo));
                     });
 
                     stack.Item().PaddingBottom(3).Text("Recibo do Pagador - Autenticar no Verso", BoletoPdfConstants.LabelStyle);
@@ -65,7 +85,7 @@ namespace BoletoNetCore.QuestPdf
             return DocumentMetadata.Default;
         }
 
-        public byte[] BoletoPdf(BoletoNetCore.Boletos listaBoletos)
+        public byte[] BoletoPdf(OLS.BoletoNetCore.Boletos listaBoletos)
         {
             this.listaBoletos = listaBoletos;
             return this.GeneratePdf();

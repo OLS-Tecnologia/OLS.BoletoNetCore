@@ -1,4 +1,4 @@
-﻿namespace BoletoNetCore
+﻿namespace OLS.BoletoNetCore
 {
     internal interface ICarteira<T>
         where T : IBanco

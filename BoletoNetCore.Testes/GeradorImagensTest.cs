@@ -1,10 +1,9 @@
 ﻿using NUnit.Framework;
+using OLS.BoletoNetCore;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace BoletoNetCore.Testes
 {

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using NUnit.Framework;
+using OLS.BoletoNetCore;
 
 namespace BoletoNetCore.Testes
 {

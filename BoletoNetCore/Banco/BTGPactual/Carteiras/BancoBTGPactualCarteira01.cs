@@ -1,7 +1,7 @@
-﻿using System;
-using BoletoNetCore.Extensions;
+﻿using OLS.BoletoNetCore.Extensions;
+using System;
 
-namespace BoletoNetCore.BTGPactual.Carteiras
+namespace OLS.BoletoNetCore.BTGPactual.Carteiras
 {
     [CarteiraCodigo("1")]
     public class BancoBTGPactualCarteira01:  ICarteira<BancoBTGPactual>

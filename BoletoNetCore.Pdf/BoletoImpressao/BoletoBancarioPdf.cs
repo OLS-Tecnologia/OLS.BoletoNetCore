@@ -1,4 +1,4 @@
-﻿using System;
+﻿using OLS.BoletoNetCore;
 
 namespace BoletoNetCore.Pdf.BoletoImpressao
 {
@@ -11,8 +11,6 @@ namespace BoletoNetCore.Pdf.BoletoImpressao
 #else
             throw new NotImplementedException();
 #endif
-
-
         }
     }
 }

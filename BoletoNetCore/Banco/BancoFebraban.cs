@@ -1,8 +1,8 @@
-﻿using BoletoNetCore.Exceptions;
+﻿using OLS.BoletoNetCore.Exceptions;
 using System;
 using System.Collections.Generic;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public abstract partial class BancoFebraban<T> where T : class, IBanco, new()
     {

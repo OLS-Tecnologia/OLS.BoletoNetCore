@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using BoletoNetCore.Exceptions;
-using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoItau : IBancoOnlineRest
     {

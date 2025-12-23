@@ -1,6 +1,6 @@
 using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class TCampoRegistroEDI
     {

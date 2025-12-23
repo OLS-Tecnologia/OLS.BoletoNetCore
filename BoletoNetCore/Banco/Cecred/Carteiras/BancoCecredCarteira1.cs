@@ -1,10 +1,6 @@
-﻿using BoletoNetCore.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("1")]
     internal class BancoCecredCarteira1 : ICarteira<BancoCecred>

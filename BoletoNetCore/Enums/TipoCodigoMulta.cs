@@ -1,4 +1,4 @@
-﻿namespace BoletoNetCore.Enums
+﻿namespace OLS.BoletoNetCore.Enums
 {
     public enum TipoCodigoMulta
     {

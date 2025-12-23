@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     /// <summary>
     /// Classe representativa de um registro (linha) de um arquivo EDI

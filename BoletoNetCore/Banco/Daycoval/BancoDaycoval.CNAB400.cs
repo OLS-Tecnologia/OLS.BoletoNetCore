@@ -1,7 +1,7 @@
 using System;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     partial class BancoDaycoval : IBancoCNAB400
     {

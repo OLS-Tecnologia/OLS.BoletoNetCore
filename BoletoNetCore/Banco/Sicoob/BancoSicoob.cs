@@ -1,10 +1,10 @@
-﻿using System;
+﻿using OLS.BoletoNetCore.Exceptions;
+using OLS.BoletoNetCore.Extensions;
+using System;
 using System.Collections.Generic;
-using BoletoNetCore.Exceptions;
-using BoletoNetCore.Extensions;
 using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     internal sealed partial class BancoSicoob : BancoFebraban<BancoSicoob>, IBanco
     {

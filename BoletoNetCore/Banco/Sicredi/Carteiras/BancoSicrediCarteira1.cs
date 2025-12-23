@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("1/A")]
     internal class BancoSicrediCarteira1 : ICarteira<BancoSicredi>

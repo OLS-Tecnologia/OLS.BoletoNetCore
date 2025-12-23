@@ -1,7 +1,7 @@
 using System;
 using SkiaSharp;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     public class BarCode2of5i : BarCodeBase
     {

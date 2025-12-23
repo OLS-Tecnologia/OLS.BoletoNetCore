@@ -1,8 +1,6 @@
 ﻿using System;
-using BoletoNetCore.Extensions;
-using static System.String;
 
-namespace BoletoNetCore
+namespace OLS.BoletoNetCore
 {
     [CarteiraCodigo("18")]
 
